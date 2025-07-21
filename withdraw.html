@@ -24,10 +24,11 @@
     <p>⚠️ Minimum ₹50 required to withdraw.</p>
 
     <form id="withdrawForm">
-      <input type="number" id="withdrawAmount" placeholder="Enter Amount to Withdraw (₹)" required />
-      <button type="submit">Submit Withdrawal Request</button>
+  <input type="number" id="amount" placeholder="Enter amount" required /><br />
+  <input type="text" id="upi" placeholder="Your UPI ID or Bank Details" required /><br />
+  <textarea id="note" placeholder="Note (Optional)"></textarea><br />
+  <button type="submit">Request Withdraw</button>
     </form>
-
     <p id="withdrawMsg"></p>
   </section>
 
