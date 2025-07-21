@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jeet365 - Withdraw</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="top-header">
+    <h2>🧾 Withdraw Coins</h2>
+    <a href="dashboard.html" class="btn">← Back to Dashboard</a>
+  </header>
+
+  <section class="form-section">
+    <h3>💳 Withdrawal Methods</h3>
+    <div class="payment-info">
+      <p><strong>UPI ID:</strong> <span style="color:green;">deepak95754272@axl</span></p>
+      <p><strong>Bank A/C No:</strong> 6948356483</p>
+      <p><strong>IFSC:</strong> KKBK0005958</p>
+    </div>
+
+    <p>⚠️ Minimum ₹50 required to withdraw.</p>
+
+    <form id="withdrawForm">
+      <input type="number" id="withdrawAmount" placeholder="Enter Amount to Withdraw (₹)" required />
+      <button type="submit">Submit Withdrawal Request</button>
+    </form>
+
+    <p id="withdrawMsg"></p>
+  </section>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBo47HJZAcS8nCEyntKPAJLeJg_zUTo1nw",
+      authDomain: "jeet365-e0749.firebaseapp.com",
+      projectId: "jeet365-e0749",
+      storageBucket: "jeet365-e0749.appspot.com",
+      messagingSenderId: "856388622116",
+      appId: "1:856388622116:web:f2313da855969554e405b1",
+      measurementId: "G-EH0F3Q96F5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("withdrawForm");
+    const msg = document.getElementById("withdrawMsg");
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const amount = parseInt(document.getElementById("withdrawAmount").value);
+
+      if (amount < 50) {
+        msg.innerText = "❌ Minimum ₹50 required for withdrawal.";
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "requests"), {
+          type: "withdraw",
+          uid: currentUser.uid,
+          email: currentUser.email,
+          amount: amount,
+          status: "pending",
+          createdAt: new Date()
+        });
+
+        msg.innerText = "✅ Withdrawal request submitted!";
+        form.reset();
+      } catch (error) {
+        console.error(error);
+        msg.innerText = "❌ Failed to submit withdrawal request.";
+      }
+    });
+  </script>
+
+</body>
+</html>
