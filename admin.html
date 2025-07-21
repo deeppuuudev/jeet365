@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel - Withdraw Requests</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { padding: 20px; background: #f8f9fa; font-family: sans-serif; }
+    h1 { text-align: center; margin-bottom: 30px; }
+    .request-card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .request-card p { margin: 5px 0; }
+    .actions button {
+      margin-right: 10px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+    .approve-btn { background: #28a745; }
+    .reject-btn { background: #dc3545; }
+  </style>
+</head>
+<body>
+  <h1>Withdraw Requests (Admin Only)</h1>
+  <div id="requestList"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBo47HJZAcS8nCEyntKPAJLeJg_zUTo1nw",
+      authDomain: "jeet365-e0749.firebaseapp.com",
+      projectId: "jeet365-e0749",
+      storageBucket: "jeet365-e0749.firebasestorage.app",
+      messagingSenderId: "856388622116",
+      appId: "1:856388622116:web:f2313da855969554e405b1",
+      measurementId: "G-EH0F3Q96F5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user && user.email === "deepworkhome100@gmail.com") {
+        loadRequests();
+      } else {
+        alert("Access denied. Admin only.");
+        window.location.href = "login.html";
+      }
+    });
+
+    async function loadRequests() {
+      const querySnapshot = await getDocs(collection(db, "withdraw_requests"));
+      const requestList = document.getElementById("requestList");
+      requestList.innerHTML = "";
+
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const card = document.createElement("div");
+        card.className = "request-card";
+
+        card.innerHTML = `
+          <p><strong>User:</strong> ${data.userEmail || "Unknown"}</p>
+          <p><strong>Amount:</strong> ₹${data.amount}</p>
+          <p><strong>UPI ID:</strong> ${data.upi || "N/A"}</p>
+          <p><strong>Account No:</strong> ${data.accountNo || "N/A"}</p>
+          <p><strong>IFSC:</strong> ${data.ifsc || "N/A"}</p>
+          <p><strong>Status:</strong> <span id="status-${docSnap.id}">${data.status}</span></p>
+          <div class="actions">
+            <button class="approve-btn" onclick="updateStatus('${docSnap.id}', 'Approved')">Approve</button>
+            <button class="reject-btn" onclick="updateStatus('${docSnap.id}', 'Rejected')">Reject</button>
+          </div>
+        `;
+        requestList.appendChild(card);
+      });
+    }
+
+    window.updateStatus = async function (id, newStatus) {
+      const requestRef = doc(db, "withdraw_requests", id);
+      await updateDoc(requestRef, { status: newStatus });
+      document.getElementById(`status-${id}`).innerText = newStatus;
+      alert(`Request ${newStatus}`);
+    };
+  </script>
+</body>
+</html>
