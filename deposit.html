@@ -14,82 +14,33 @@
   </header>
 
   <section class="form-section">
-    <h3>📲 Payment Instructions</h3>
-    <p>Send money to either of the following methods:</p>
+    <h3>📲 Send Payment via UPI</h3>
+    <p>Receiver UPI ID: <strong style="color:green;">deepak95754272@axl</strong></p>
 
-    <div class="payment-info">
-      <p><strong>UPI ID:</strong> <span style="color:green;">deepak95754272@axl</span></p>
-      <p><strong>Account Number:</strong> 6948356483</p>
-      <p><strong>IFSC Code:</strong> KKBK0005958</p>
-      <p><em>After payment, fill the form below to request coins.</em></p>
-    </div>
-
-    <form id="depositForm">
+    <form id="upiForm">
       <input type="number" id="amount" placeholder="Enter Amount (₹)" required />
-      <button type="submit">Submit Request</button>
+      <button type="submit">Pay Now</button>
     </form>
 
-    <p id="statusMsg"></p>
+    <p>After payment, coins will be added manually by admin.</p>
   </section>
 
-  <!-- Firebase Scripts -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBo47HJZAcS8nCEyntKPAJLeJg_zUTo1nw",
-      authDomain: "jeet365-e0749.firebaseapp.com",
-      projectId: "jeet365-e0749",
-      storageBucket: "jeet365-e0749.appspot.com",
-      messagingSenderId: "856388622116",
-      appId: "1:856388622116:web:f2313da855969554e405b1",
-      measurementId: "G-EH0F3Q96F5"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const form = document.getElementById("depositForm");
-    const statusMsg = document.getElementById("statusMsg");
-
-    let currentUser = null;
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUser = user;
-      } else {
-        window.location.href = "login.html";
-      }
-    });
-
-    form.addEventListener("submit", async (e) => {
+  <script>
+    document.getElementById("upiForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      const amount = parseInt(document.getElementById("amount").value);
-
+      const amount = document.getElementById("amount").value;
+      const upiID = "deepak95754272@axl";
+      const name = "Jeet365";
+      const note = "Jeet365 Coins Topup";
+      
       if (amount < 10) {
-        statusMsg.innerText = "Minimum ₹10 required.";
+        alert("Minimum ₹10 required.");
         return;
       }
 
-      try {
-        await addDoc(collection(db, "requests"), {
-          type: "deposit",
-          uid: currentUser.uid,
-          email: currentUser.email,
-          amount: amount,
-          status: "pending",
-          createdAt: new Date()
-        });
+      const upiLink = `upi://pay?pa=${upiID}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
 
-        statusMsg.innerText = "✅ Request submitted successfully!";
-        form.reset();
-      } catch (err) {
-        console.error(err);
-        statusMsg.innerText = "❌ Failed to submit request.";
-      }
+      window.location.href = upiLink;
     });
   </script>
 
