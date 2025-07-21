@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jeet365 - Deposit</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="top-header">
+    <h2>💰 Deposit Coins</h2>
+    <a href="dashboard.html" class="btn">← Back to Dashboard</a>
+  </header>
+
+  <section class="form-section">
+    <h3>📲 Payment Instructions</h3>
+    <p>Send money to either of the following methods:</p>
+
+    <div class="payment-info">
+      <p><strong>UPI ID:</strong> <span style="color:green;">deepak95754272@axl</span></p>
+      <p><strong>Account Number:</strong> 6948356483</p>
+      <p><strong>IFSC Code:</strong> KKBK0005958</p>
+      <p><em>After payment, fill the form below to request coins.</em></p>
+    </div>
+
+    <form id="depositForm">
+      <input type="number" id="amount" placeholder="Enter Amount (₹)" required />
+      <button type="submit">Submit Request</button>
+    </form>
+
+    <p id="statusMsg"></p>
+  </section>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBo47HJZAcS8nCEyntKPAJLeJg_zUTo1nw",
+      authDomain: "jeet365-e0749.firebaseapp.com",
+      projectId: "jeet365-e0749",
+      storageBucket: "jeet365-e0749.appspot.com",
+      messagingSenderId: "856388622116",
+      appId: "1:856388622116:web:f2313da855969554e405b1",
+      measurementId: "G-EH0F3Q96F5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("depositForm");
+    const statusMsg = document.getElementById("statusMsg");
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const amount = parseInt(document.getElementById("amount").value);
+
+      if (amount < 10) {
+        statusMsg.innerText = "Minimum ₹10 required.";
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "requests"), {
+          type: "deposit",
+          uid: currentUser.uid,
+          email: currentUser.email,
+          amount: amount,
+          status: "pending",
+          createdAt: new Date()
+        });
+
+        statusMsg.innerText = "✅ Request submitted successfully!";
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        statusMsg.innerText = "❌ Failed to submit request.";
+      }
+    });
+  </script>
+
+</body>
+</html>
