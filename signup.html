@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jeet365 - Signup</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Create Your Jeet365 Account</h2>
+    <form id="signupForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password (min 6 chars)" required />
+      <button type="submit">Signup</button>
+    </form>
+
+    <p>Already have an account? <a href="login.html">Login</a></p>
+    <div id="signupMessage" style="color:red;"></div>
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBo47HJZAcS8nCEyntKPAJLeJg_zUTo1nw",
+      authDomain: "jeet365-e0749.firebaseapp.com",
+      projectId: "jeet365-e0749",
+      storageBucket: "jeet365-e0749.appspot.com",
+      messagingSenderId: "856388622116",
+      appId: "1:856388622116:web:f2313da855969554e405b1",
+      measurementId: "G-EH0F3Q96F5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const signupForm = document.getElementById("signupForm");
+    const message = document.getElementById("signupMessage");
+
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Create Firestore user data with 100 welcome coins
+        await setDoc(doc(db, "users", user.uid), {
+          email: email,
+          coins: 100,
+          totalDeposits: 0,
+          totalWithdrawals: 0,
+          createdAt: new Date().toISOString(),
+        });
+
+        window.location.href = "dashboard.html";
+      } catch (error) {
+        message.innerText = "Signup failed: " + error.message;
+      }
+    });
+  </script>
+
+</body>
+</html>
