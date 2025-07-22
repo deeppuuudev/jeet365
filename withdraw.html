@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Jeet365 - Withdraw</title>
   <link rel="stylesheet" href="style.css" />
-  
 </head>
 <body>
 
@@ -25,19 +24,19 @@
     <p>⚠️ Minimum ₹50 required to withdraw.</p>
 
     <form id="withdrawForm">
-  <input type="number" id="amount" placeholder="Enter amount" required /><br />
-  <input type="text" id="upi" placeholder="Your UPI ID or Bank Details" required /><br />
-  <textarea id="note" placeholder="Note (Optional)"></textarea><br />
-  <button type="submit">Request Withdraw</button>
+      <input type="number" id="amount" placeholder="Enter amount" required /><br />
+      <input type="text" id="upi" placeholder="Your UPI ID or Bank Details" required /><br />
+      <textarea id="note" placeholder="Note (Optional)"></textarea><br />
+      <button type="submit">Request Withdraw</button>
     </form>
     <p id="withdrawMsg"></p>
   </section>
 
-  <!-- Firebase Scripts -->
+  <!-- Firebase Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBo47HJZAcS8nCEyntKPAJLeJg_zUTo1nw",
@@ -68,10 +67,18 @@
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const amount = parseInt(document.getElementById("withdrawAmount").value);
+
+      const amount = parseInt(document.getElementById("amount").value);
+      const upi = document.getElementById("upi").value.trim();
+      const note = document.getElementById("note").value.trim();
 
       if (amount < 50) {
         msg.innerText = "❌ Minimum ₹50 required for withdrawal.";
+        return;
+      }
+
+      if (!upi) {
+        msg.innerText = "❌ UPI ID or Bank Details is required.";
         return;
       }
 
@@ -81,8 +88,10 @@
           uid: currentUser.uid,
           email: currentUser.email,
           amount: amount,
+          paymentInfo: upi,
+          note: note || "",
           status: "pending",
-          createdAt: new Date()
+          createdAt: serverTimestamp()
         });
 
         msg.innerText = "✅ Withdrawal request submitted!";
@@ -93,7 +102,6 @@
       }
     });
   </script>
-  
-<script type="module" src="js/withdraw.js"></script>
+
 </body>
 </html>
