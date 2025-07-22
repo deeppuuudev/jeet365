@@ -14,20 +14,15 @@
   </header>
 
   <section class="form-section">
-    <h3>💳 Withdrawal Methods</h3>
-    <div class="payment-info">
-      <p><strong>UPI ID:</strong> <span style="color:green;">deepak95754272@axl</span></p>
-      <p><strong>Bank A/C No:</strong> 6948356483</p>
-      <p><strong>IFSC:</strong> KKBK0005958</p>
-    </div>
+    <h3>Withdraw Request Form</h3>
 
-    <p>⚠️ Minimum ₹50 required to withdraw.</p>
+    <p>⚠️ Minimum ₹50 required to request withdrawal.</p>
 
     <form id="withdrawForm">
-      <input type="number" id="amount" placeholder="Enter amount" required /><br />
-      <input type="text" id="upi" placeholder="Your UPI ID or Bank Details" required /><br />
-      <textarea id="note" placeholder="Note (Optional)"></textarea><br />
-      <button type="submit">Request Withdraw</button>
+      <input type="number" id="amount" placeholder="Enter amount (₹)" required /><br />
+      <input type="text" id="upi" placeholder="Your UPI ID or Bank Info" required /><br />
+      <textarea id="note" placeholder="Note (optional)"></textarea><br />
+      <button type="submit">Submit Request</button>
     </form>
     <p id="withdrawMsg"></p>
   </section>
@@ -78,7 +73,7 @@
       }
 
       if (!upi) {
-        msg.innerText = "❌ UPI ID or Bank Details is required.";
+        msg.innerText = "❌ UPI/Bank Info is required.";
         return;
       }
 
