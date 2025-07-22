@@ -3,11 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel - Withdraw Requests</title>
+  <title>Admin Panel - Jeet365</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    body { padding: 20px; background: #f8f9fa; font-family: sans-serif; }
-    h1 { text-align: center; margin-bottom: 30px; }
+    body {
+      padding: 20px;
+      background: #f8f9fa;
+      font-family: sans-serif;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
     .request-card {
       background: white;
       padding: 20px;
@@ -15,7 +22,9 @@
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    .request-card p { margin: 5px 0; }
+    .request-card p {
+      margin: 5px 0;
+    }
     .actions button {
       margin-right: 10px;
       padding: 5px 10px;
@@ -24,62 +33,61 @@
       color: white;
       cursor: pointer;
     }
-    .approve-btn { background: #28a745; }
-    .reject-btn { background: #dc3545; }
+    .approve-btn {
+      background: #28a745;
+    }
+    .reject-btn {
+      background: #dc3545;
+    }
+    input {
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button.approve-btn.add {
+      width: 100%;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
   <h1>Withdraw Requests (Admin Only)</h1>
   <div id="requestList"></div>
 
-  <script type="module">import { query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  <h2>➕ Manually Add Coins</h2>
+  <div class="request-card">
+    <label>User Email:</label>
+    <input type="email" id="targetEmail" placeholder="Enter user email" />
+    
+    <label>Coins to Add:</label>
+    <input type="number" id="coinsToAdd" placeholder="Enter number of coins" />
+    
+    <button class="approve-btn add" onclick="addCoins()">Add Coins</button>
+  </div>
 
-// Add Coins function
-window.addCoins = async function () {
-  const targetEmail = document.getElementById("targetEmail").value.trim();
-  const coinsToAdd = parseInt(document.getElementById("coinsToAdd").value);
-
-  if (!targetEmail || isNaN(coinsToAdd)) {
-    alert("Please enter valid email and coin amount.");
-    return;
-  }
-
-  try {
-    // Find user by email in Firestore
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("email", "==", targetEmail));
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
-      alert("User not found.");
-      return;
-    }
-
-    querySnapshot.forEach(async (userDoc) => {
-      const userRef = doc(db, "users", userDoc.id);
-      const currentCoins = userDoc.data().coins || 0;
-      const newCoinBalance = currentCoins + coinsToAdd;
-
-      await updateDoc(userRef, {
-        coins: newCoinBalance,
-      });
-
-      alert(`Added ${coinsToAdd} coins to ${targetEmail}`);
-    });
-  } catch (error) {
-    console.error("Error adding coins: ", error);
-    alert("Something went wrong while adding coins.");
-  }
-};
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      updateDoc,
+      doc,
+      query,
+      where
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBo47HJZAcS8nCEyntKPAJLeJg_zUTo1nw",
       authDomain: "jeet365-e0749.firebaseapp.com",
       projectId: "jeet365-e0749",
-      storageBucket: "jeet365-e0749.firebasestorage.app",
+      storageBucket: "jeet365-e0749.appspot.com",
       messagingSenderId: "856388622116",
       appId: "1:856388622116:web:f2313da855969554e405b1",
       measurementId: "G-EH0F3Q96F5"
@@ -89,6 +97,7 @@ window.addCoins = async function () {
     const db = getFirestore(app);
     const auth = getAuth(app);
 
+    // Allow only admin
     onAuthStateChanged(auth, async (user) => {
       if (user && user.email === "deepworkhome100@gmail.com") {
         loadRequests();
@@ -98,6 +107,7 @@ window.addCoins = async function () {
       }
     });
 
+    // Load withdraw requests
     async function loadRequests() {
       const querySnapshot = await getDocs(collection(db, "withdraw_requests"));
       const requestList = document.getElementById("requestList");
@@ -124,22 +134,47 @@ window.addCoins = async function () {
       });
     }
 
+    // Approve/Reject status
     window.updateStatus = async function (id, newStatus) {
       const requestRef = doc(db, "withdraw_requests", id);
       await updateDoc(requestRef, { status: newStatus });
       document.getElementById(`status-${id}`).innerText = newStatus;
-      alert(`Request ${newStatus}`);
+      alert(`Request marked as ${newStatus}`);
+    };
+
+    // Add coins to user
+    window.addCoins = async function () {
+      const targetEmail = document.getElementById("targetEmail").value.trim();
+      const coinsToAdd = parseInt(document.getElementById("coinsToAdd").value);
+
+      if (!targetEmail || isNaN(coinsToAdd)) {
+        alert("Please enter valid email and coin amount.");
+        return;
+      }
+
+      try {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("email", "==", targetEmail));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          alert("❌ User not found.");
+          return;
+        }
+
+        querySnapshot.forEach(async (userDoc) => {
+          const userRef = doc(db, "users", userDoc.id);
+          const currentCoins = userDoc.data().coins || 0;
+          const newCoinBalance = currentCoins + coinsToAdd;
+
+          await updateDoc(userRef, { coins: newCoinBalance });
+          alert(`✅ Added ${coinsToAdd} coins to ${targetEmail}`);
+        });
+      } catch (error) {
+        console.error("Error adding coins:", error);
+        alert("❌ Error while adding coins.");
+      }
     };
   </script>
-  <h2>Manually Add Coins</h2>
-<div class="request-card">
-  <label>User Email:</label><br />
-  <input type="email" id="targetEmail" placeholder="Enter user email" /><br /><br />
-  
-  <label>Coins to Add:</label><br />
-  <input type="number" id="coinsToAdd" placeholder="Enter number of coins" /><br /><br />
-  
-  <button class="approve-btn" onclick="addCoins()">Add Coins</button>
-</div>
 </body>
 </html>
