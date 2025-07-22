@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Color Prediction Game - Jeet365</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .game-container {
+      text-align: center;
+      padding: 20px;
+    }
+    .color-buttons button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .timer {
+      font-size: 24px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>🎨 Color Prediction Game</h1>
+    <p><strong>Your Coins:</strong> <span id="userCoins">0</span></p>
+
+    <div>
+      <input type="number" id="betAmount" placeholder="Enter Bet (min 10 coins)" min="10" />
+    </div>
+
+    <div class="color-buttons">
+      <button style="background-color: red;" onclick="placeBet('Red')">Red</button>
+      <button style="background-color: green;" onclick="placeBet('Green')">Green</button>
+      <button style="background-color: purple;" onclick="placeBet('Violet')">Violet</button>
+    </div>
+
+    <div class="timer" id="timer">Next round in: <span id="countdown">30</span> sec</div>
+    <div id="gameResult"></div>
+  </div>
+
+  <script type="module" src="game.js"></script>
+</body>
+</html>
