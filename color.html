@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Color Prediction Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="dashboard-header">
+    <h1>🎨 Color Prediction</h1>
+    <a href="dashboard.html">← Back to Dashboard</a>
+  </header>
+
+  <main class="color-game">
+    <div id="timer">Next Game in: <span id="countdown">30</span>s</div>
+
+    <div class="bet-section">
+      <input type="number" id="betAmount" placeholder="Enter Coins to Bet (min 10)">
+      <button onclick="placeBet('red')" class="red">Bet Red</button>
+      <button onclick="placeBet('green')" class="green">Bet Green</button>
+      <button onclick="placeBet('violet')" class="violet">Bet Violet</button>
+    </div>
+
+    <div id="resultDisplay">Last Result: <span id="lastResult">--</span></div>
+    <div id="userCoins">Coins: Loading...</div>
+
+    <div id="betHistory">
+      <h3>Your Last Bets</h3>
+      <ul id="historyList"></ul>
+    </div>
+  </main>
+
+  <script type="module" src="color.js"></script>
+</body>
+</html>
