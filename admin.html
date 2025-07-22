@@ -93,5 +93,15 @@
       alert(`Request ${newStatus}`);
     };
   </script>
+  <h2>Manually Add Coins</h2>
+<div class="request-card">
+  <label>User Email:</label><br />
+  <input type="email" id="targetEmail" placeholder="Enter user email" /><br /><br />
+  
+  <label>Coins to Add:</label><br />
+  <input type="number" id="coinsToAdd" placeholder="Enter number of coins" /><br /><br />
+  
+  <button class="approve-btn" onclick="addCoins()">Add Coins</button>
+</div>
 </body>
 </html>
