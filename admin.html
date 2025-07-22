@@ -32,7 +32,45 @@
   <h1>Withdraw Requests (Admin Only)</h1>
   <div id="requestList"></div>
 
-  <script type="module">
+  <script type="module">import { query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// Add Coins function
+window.addCoins = async function () {
+  const targetEmail = document.getElementById("targetEmail").value.trim();
+  const coinsToAdd = parseInt(document.getElementById("coinsToAdd").value);
+
+  if (!targetEmail || isNaN(coinsToAdd)) {
+    alert("Please enter valid email and coin amount.");
+    return;
+  }
+
+  try {
+    // Find user by email in Firestore
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("email", "==", targetEmail));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      alert("User not found.");
+      return;
+    }
+
+    querySnapshot.forEach(async (userDoc) => {
+      const userRef = doc(db, "users", userDoc.id);
+      const currentCoins = userDoc.data().coins || 0;
+      const newCoinBalance = currentCoins + coinsToAdd;
+
+      await updateDoc(userRef, {
+        coins: newCoinBalance,
+      });
+
+      alert(`Added ${coinsToAdd} coins to ${targetEmail}`);
+    });
+  } catch (error) {
+    console.error("Error adding coins: ", error);
+    alert("Something went wrong while adding coins.");
+  }
+};
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
