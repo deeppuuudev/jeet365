@@ -16,16 +16,38 @@
       font-size: 18px;
       border-radius: 10px;
       cursor: pointer;
+      color: white;
+      border: none;
+    }
+    .color-buttons button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
     .timer {
       font-size: 24px;
       margin: 20px 0;
+    }
+    .result-log {
+      margin-top: 30px;
+      padding: 10px;
+      border-top: 2px solid #ccc;
+    }
+    .round-history {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 10px;
+      text-align: left;
+    }
+    .round-history div {
+      margin: 4px 0;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
   <div class="game-container">
     <h1>🎨 Color Prediction Game</h1>
+
     <p><strong>Your Coins:</strong> <span id="userCoins">0</span></p>
 
     <div>
@@ -33,13 +55,22 @@
     </div>
 
     <div class="color-buttons">
-      <button style="background-color: red;" onclick="placeBet('Red')">Red</button>
-      <button style="background-color: green;" onclick="placeBet('Green')">Green</button>
-      <button style="background-color: purple;" onclick="placeBet('Violet')">Violet</button>
+      <button id="redBtn" style="background-color: red;" onclick="placeBet('Red')">Red</button>
+      <button id="greenBtn" style="background-color: green;" onclick="placeBet('Green')">Green</button>
+      <button id="violetBtn" style="background-color: purple;" onclick="placeBet('Violet')">Violet</button>
     </div>
 
     <div class="timer" id="timer">Next round in: <span id="countdown">30</span> sec</div>
-    <div id="gameResult"></div>
+
+    <div class="result-log">
+      <h3>🧾 Round Result:</h3>
+      <p id="gameResult">Waiting for result...</p>
+      
+      <h3>📜 Bet History</h3>
+      <div class="round-history" id="roundHistory">
+        <!-- History items will appear here via JS -->
+      </div>
+    </div>
   </div>
 
   <script type="module" src="game.js"></script>
