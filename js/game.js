@@ -159,6 +159,6 @@ async function loadLastResults() {
     const data = doc.data();
     historyHTML += `<p>${data.result} - ${new Date(data.createdAt.toDate()).toLocaleTimeString()}</p>`;
   });
-
+document.getElementById("gameHistory").innerHTML = historyHTML;
   document.getElementById("gameResult").innerHTML += historyHTML;
   }
