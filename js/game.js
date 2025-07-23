@@ -1,150 +1,164 @@
-// game.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc,
+  setDoc,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  limit,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// Firebase config
+// Firebase Config
 const firebaseConfig = {
-  apiKey: "AIzaSyBo47HJZAcS8nCEyntKPAJLeJg_zUTo1nw",
-  authDomain: "jeet365-e0749.firebaseapp.com",
-  projectId: "jeet365-e0749",
-  storageBucket: "jeet365-e0749.appspot.com",
-  messagingSenderId: "856388622116",
-  appId: "1:856388622116:web:f2313da855969554e405b1",
+  apiKey: "AIzaSyAhp9goPQy1g4JQh_Jw0lc3mHv8dWqCy1Q",
+  authDomain: "jeet365-fabf2.firebaseapp.com",
+  projectId: "jeet365-fabf2",
+  storageBucket: "jeet365-fabf2.appspot.com",
+  messagingSenderId: "254181142456",
+  appId: "1:254181142456:web:283c3abe5a76c71bd0294d",
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-let currentUser;
+let userId = null;
 let userCoins = 0;
-let lastBetColor = null;
-let lastBetAmount = 0;
+let currentBet = null;
+let timerInterval;
 let countdown = 30;
-let countdownInterval;
 
-const countdownEl = document.getElementById("countdown");
+const coinsDisplay = document.getElementById("userCoins");
+const countdownDisplay = document.getElementById("countdown");
 const gameResult = document.getElementById("gameResult");
-const userCoinsEl = document.getElementById("userCoins");
+const betInput = document.getElementById("betAmount");
+const buttons = document.querySelectorAll(".color-buttons button");
 
-// Start game timer
-function startTimer() {
-  clearInterval(countdownInterval); // Clear any existing timer
-  countdown = 30;
-  countdownEl.innerText = countdown;
-
-  countdownInterval = setInterval(() => {
-    countdown--;
-    countdownEl.innerText = countdown;
-    if (countdown === 0) {
-      clearInterval(countdownInterval);
-      autoResult();
-      setTimeout(startTimer, 5000); // 5s break between rounds
-    }
-  }, 1000);
-}
-
-// Generate result with 80% lose, 20% win
-function autoResult() {
-  const colors = ["Red", "Green", "Violet"];
-
-  let resultColor;
-
-  if (lastBetColor && Math.random() < 0.2) {
-    // 20% chance of win (give same color as bet)
-    resultColor = lastBetColor;
-  } else {
-    // 80% chance of random color (mostly lose)
-    const filtered = colors.filter(c => c !== lastBetColor);
-    resultColor = filtered[Math.floor(Math.random() * filtered.length)];
-  }
-
-  showResult(resultColor);
-}
-
-// Handle Bet
-window.placeBet = async function (color) {
-  const amount = parseInt(document.getElementById("betAmount").value);
-
-  if (!amount || isNaN(amount)) {
-    return alert("Please enter a valid bet amount.");
-  }
-  if (amount < 10) {
-    return alert("Minimum bet is 10 coins.");
-  }
-  if (amount > userCoins) {
-    return alert("You do not have enough coins.");
-  }
-
-  lastBetColor = color;
-  lastBetAmount = amount;
-
-  try {
-    const userRef = doc(db, "users", currentUser.uid);
-    await updateDoc(userRef, {
-      coins: userCoins - amount
-    });
-    userCoins -= amount;
-    userCoinsEl.innerText = userCoins;
-    gameResult.innerHTML = `You bet ${amount} coins on <b>${color}</b>. Waiting for result...`;
-  } catch (error) {
-    alert("Error placing bet. Try again.");
-    console.error(error);
-  }
-}
-
-// Show Game Result
-async function showResult(resultColor) {
-  gameResult.innerHTML = `Result: <b style="color:${resultColor.toLowerCase()}">${resultColor}</b><br/>`;
-
-  if (lastBetColor === resultColor) {
-    const winAmount = lastBetAmount * 2;
-    userCoins += winAmount;
-    gameResult.innerHTML += `You won 🎉 +${winAmount} coins!`;
-  } else {
-    gameResult.innerHTML += `You lost 😢`;
-  }
-
-  try {
-    const userRef = doc(db, "users", currentUser.uid);
-    await updateDoc(userRef, {
-      coins: userCoins
-    });
-    userCoinsEl.innerText = userCoins;
-  } catch (error) {
-    alert("Failed to update coins.");
-    console.error(error);
-  }
-
-  // Reset bet values
-  lastBetColor = null;
-  lastBetAmount = 0;
-}
-
-// Auth check and user coin fetch
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    currentUser = user;
-    try {
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
-      if (userSnap.exists()) {
-        const data = userSnap.data();
-        userCoins = data.coins || 0;
-        userCoinsEl.innerText = userCoins;
-      } else {
-        // New user fallback
-        await updateDoc(userRef, { coins: 100 }); // Optional default
-        userCoins = 100;
-        userCoinsEl.innerText = 100;
-      }
-
-      startTimer(); // Start game loop
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
+    userId = user.uid;
+    await loadUserCoins();
+    startGameLoop();
+    loadLastResults();
   } else {
+    alert("Please login first.");
     window.location.href = "login.html";
   }
 });
+
+async function loadUserCoins() {
+  const docRef = doc(db, "users", userId);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    userCoins = docSnap.data().coins || 0;
+    coinsDisplay.textContent = userCoins;
+  }
+}
+
+function disableButtons(disable = true) {
+  buttons.forEach(btn => btn.disabled = disable);
+}
+
+function getRandomColor() {
+  const colors = ["Red", "Green", "Violet"];
+  const lossChance = Math.random();
+  return lossChance < 0.8 ? colors[Math.floor(Math.random() * colors.length)] : currentBet?.color || colors[0];
+}
+
+function placeBet(color) {
+  const amount = parseInt(betInput.value);
+  if (amount < 10 || isNaN(amount)) {
+    alert("Minimum 10 coins required to play.");
+    return;
+  }
+
+  if (userCoins < amount) {
+    alert("Not enough coins.");
+    return;
+  }
+
+  if (currentBet) {
+    alert("Bet already placed for this round.");
+    return;
+  }
+
+  currentBet = { color, amount };
+  disableButtons(true);
+  gameResult.textContent = `You bet ${amount} on ${color}`;
+}
+
+function updateCountdownUI() {
+  countdownDisplay.textContent = countdown;
+}
+
+function startGameLoop() {
+  timerInterval = setInterval(async () => {
+    countdown--;
+
+    updateCountdownUI();
+
+    if (countdown === 0) {
+      disableButtons(true);
+      await resolveGame();
+      countdown = 30;
+      currentBet = null;
+    }
+
+    if (countdown <= 25 && !currentBet) {
+      disableButtons(false);
+    }
+
+  }, 1000);
+}
+
+async function resolveGame() {
+  const resultColor = getRandomColor();
+  let win = false;
+
+  if (currentBet && currentBet.color === resultColor) {
+    userCoins += currentBet.amount * 2;
+    win = true;
+    gameResult.innerHTML = `<span style="color:green;">You WON! Result: ${resultColor}</span>`;
+  } else if (currentBet) {
+    userCoins -= currentBet.amount;
+    gameResult.innerHTML = `<span style="color:red;">You LOST! Result: ${resultColor}</span>`;
+  } else {
+    gameResult.innerHTML = `<span style="color:orange;">No Bet! Result: ${resultColor}</span>`;
+  }
+
+  coinsDisplay.textContent = userCoins;
+
+  // Save user coins
+  await updateDoc(doc(db, "users", userId), { coins: userCoins });
+
+  // Save game result
+  await addDoc(collection(db, "rounds"), {
+    result: resultColor,
+    createdAt: new Date()
+  });
+
+  loadLastResults();
+}
+
+async function loadLastResults() {
+  const roundsRef = collection(db, "rounds");
+  const q = query(roundsRef, orderBy("createdAt", "desc"), limit(10));
+  const querySnapshot = await getDocs(q);
+
+  let historyHTML = "<h3>Last 10 Results:</h3>";
+  querySnapshot.forEach(doc => {
+    const data = doc.data();
+    historyHTML += `<p>${data.result} - ${new Date(data.createdAt.toDate()).toLocaleTimeString()}</p>`;
+  });
+
+  document.getElementById("gameResult").innerHTML += historyHTML;
+  }
