@@ -2,168 +2,156 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jeet365 - Color & Number Prediction</title>
-  <nav>
-  <a href="login.html" style="color:white; text-decoration:none; margin-right:20px;">Login</a>
-  <a href="signup.html" style="color:white; text-decoration:none;">Signup</a>
-</nav>
-
-...
-
-<button class="cta-button" onclick="location.href='signup.html'">Join Now</button>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeet365 - Play & Win</title>
   <style>
-    body {
+    * {
       margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to bottom, #ffffff, #fff4e0);
-      color: #000;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom, #fff9e6, #ffe5b4);
+      color: #222;
+      min-height: 100vh;
     }
 
     header {
-      background-color: #ffcc00;
-      padding: 20px;
-      text-align: center;
-      font-size: 32px;
-      font-weight: bold;
-      color: #000;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      background: linear-gradient(to right, #ffb347, #ffcc33);
+      padding: 20px 40px;
+      box-shadow: 0 4px 10px rgba(255, 165, 0, 0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    nav {
-      background-color: #ffa500;
+    header h1 {
+      color: #2b2b2b;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .hero {
+      padding: 60px 20px;
       text-align: center;
-      padding: 12px;
+    }
+
+    .hero h2 {
+      font-size: 40px;
+      color: #e68600;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(255, 193, 7, 0.4);
+    }
+
+    .hero p {
       font-size: 18px;
-      font-weight: bold;
-      color: white;
-    }
-
-    .section {
-      padding: 30px 20px;
-    }
-
-    .highlight-box {
-      background: #ffd700;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      color: #444;
       margin-bottom: 30px;
     }
 
-    h2 {
-      color: #d48a00;
-      font-size: 22px;
-      margin-top: 0;
-    }
-
-    p {
-      font-size: 16px;
-      line-height: 1.6;
-    }
-
     .cta-button {
-      background: #ff6600;
-      color: white;
-      padding: 12px 25px;
+      background: #ff9900;
+      color: #fff;
       border: none;
-      border-radius: 8px;
+      padding: 15px 30px;
       font-size: 18px;
+      border-radius: 50px;
       cursor: pointer;
-      margin-top: 15px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      box-shadow: 0 5px 15px rgba(255, 153, 0, 0.4);
+      transition: background 0.3s;
     }
 
     .cta-button:hover {
-      background: #ff4400;
+      background: #e67e00;
     }
 
-    .whatsapp-button {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #25d366;
-      color: white;
-      border-radius: 50%;
-      padding: 15px;
-      font-size: 24px;
+    .section {
+      padding: 50px 20px;
       text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      text-decoration: none;
+    }
+
+    .section h3 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #e68600;
+    }
+
+    .section p {
+      font-size: 16px;
+      color: #444;
+      max-width: 800px;
+      margin: 0 auto;
     }
 
     footer {
-      background: #eee;
-      padding: 15px;
+      background: #222;
+      color: #ccc;
       text-align: center;
+      padding: 20px;
+      margin-top: 40px;
       font-size: 14px;
-      color: #444;
     }
 
     @media (max-width: 600px) {
       header {
-        font-size: 24px;
+        flex-direction: column;
+        align-items: flex-start;
       }
 
       nav {
-        font-size: 16px;
+        margin-top: 10px;
       }
 
-      .highlight-box {
-        padding: 15px;
+      .hero h2 {
+        font-size: 28px;
       }
 
       .cta-button {
-        font-size: 16px;
-        padding: 10px 20px;
+        width: 100%;
+        max-width: 300px;
       }
     }
   </style>
 </head>
 <body>
 
-  <header>Jeet365</header>
+  <header>
+    <h1>Jeet365</h1>
+    <nav>
+      <a href="login.html">Login</a>
+      <a href="signup.html">Signup</a>
+    </nav>
+  </header>
 
-  <nav>Login | Signup</nav>
+  <section class="hero">
+    <h2>Welcome to Jeet365</h2>
+    <p>India’s most exciting color & number prediction game. Win big with every play!</p>
+    <button class="cta-button" onclick="location.href='signup.html'">Join Now</button>
+  </section>
 
-  <div class="section">
-    <div class="highlight-box">
-      <h2>India's Most Trusted Prediction Platform</h2>
-      <p>Play Color & Number Games, Win Real Coins Instantly!</p>
-      <button class="cta-button">Join Now</button>
-    </div>
+  <section class="section">
+    <h3>How to Play</h3>
+    <p>Choose a color or number, place your bet with coins, and win up to 8X rewards instantly! Simple, exciting, and rewarding.</p>
+  </section>
 
-    <div class="highlight-box">
-      <h2>🎯 Color Game</h2>
-      <p>Choose Red / Green / Violet – Win 2x Instantly</p>
-    </div>
+  <section class="section">
+    <h3>Safe & Secure</h3>
+    <p>We use secure UPI payments, manual coin approval, and 100% transparent logic to make your game experience smooth and trustworthy.</p>
+  </section>
 
-    <div class="highlight-box">
-      <h2>🔢 Number Game</h2>
-      <p>Pick a Number 0-9 – Win 8x Your Coins</p>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="highlight-box">
-      <h2>💰 Instant UPI Payment</h2>
-      <p>Pay directly to Admin – No Waiting, No Screenshots Required</p>
-    </div>
-
-    <div class="highlight-box">
-      <h2>📜 Terms & Conditions</h2>
-      <p>
-        1. Coins are non-refundable after placing a bet. <br/>
-        2. Admin reserves the right to block fake or spam users. <br/>
-        3. Withdrawals processed within 24 hours. <br/>
-      
-      </p>
-    </div>
-  </div>
-
-  <a class="whatsapp-button" href="https://wa.me/917724941807" target="_blank">📱</a>
-
-  <footer>© 2025 Jeet365. Built by Deepak</footer>
+  <footer>
+    &copy; 2025 Jeet365. All Rights Reserved.
+  </footer>
 
 </body>
 </html>
