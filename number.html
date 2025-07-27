@@ -1,0 +1,106 @@
+<!-- number.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Number Game - Jeet365</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="js/firebase-config.js"></script>
+</head>
+<body>
+  <header class="header">
+    <h1>🔢 Jeet365 - Number Game</h1>
+    <nav>
+      <a href="dashboard.html">🏠 Dashboard</a>
+      <a href="color.html">🎯 Color Game</a>
+      <a href="withdraw.html">⬇ Withdraw</a>
+      <a href="#" onclick="logout()">🚪 Logout</a>
+    </nav>
+  </header>
+
+  <section class="game">
+    <h2>Pick a Number (0–9)</h2>
+    <p>Win 8x your bet on correct guess!</p>
+
+    <div class="timer">⏱ Time Left: <span id="timer">30</span>s</div>
+
+    <div class="number-buttons">
+      <!-- 0 to 9 buttons -->
+      <div id="numberGrid"></div>
+    </div>
+
+    <input type="number" id="betAmount" placeholder="Enter Bet Amount (Min 10)">
+    <div id="resultBox"></div>
+  </section>
+
+  <script>
+    let timer = 30;
+    let gameInterval;
+    let chosenNumber = null;
+
+    function startTimer() {
+      gameInterval = setInterval(() => {
+        timer--;
+        document.getElementById("timer").textContent = timer;
+        if (timer === 0) {
+          clearInterval(gameInterval);
+          showResult();
+          setTimeout(() => {
+            timer = 30;
+            startTimer();
+          }, 3000);
+        }
+      }, 1000);
+    }
+
+    function generateButtons() {
+      const grid = document.getElementById("numberGrid");
+      for (let i = 0; i < 10; i++) {
+        const btn = document.createElement("button");
+        btn.innerText = i;
+        btn.onclick = () => pickNumber(i);
+        btn.className = "number-btn";
+        grid.appendChild(btn);
+      }
+    }
+
+    function pickNumber(num) {
+      chosenNumber = num;
+      document.getElementById("resultBox").innerHTML = `🕒 You selected <strong>${num}</strong>`;
+    }
+
+    function showResult() {
+      if (chosenNumber === null) {
+        document.getElementById("resultBox").innerHTML = `<p>⚠️ You didn’t select a number.</p>`;
+        return;
+      }
+
+      const winNumber = Math.floor(Math.random() * 10);
+      const winChance = Math.random() < 0.2; // 20% win
+
+      const resultNumber = winChance ? chosenNumber : winNumber;
+
+      document.getElementById("resultBox").innerHTML = `
+        <p>🔔 Result: <strong>${resultNumber}</strong></p>
+        ${resultNumber == chosenNumber ? '<p>🎉 You Win 8x!</p>' : '<p>❌ You Lose!</p>'}
+      `;
+
+      // TODO: Firebase coin deduction + reward logic
+      chosenNumber = null;
+    }
+
+    function logout() {
+      auth.signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    }
+
+    generateButtons();
+    startTimer();
+  </script>
+</body>
+</html>
