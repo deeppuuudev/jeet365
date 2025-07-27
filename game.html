@@ -2,14 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Jeet365 - Play Game</title>
+  <title>Jeet365 - Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- Inside CSS for Game Page -->
   <style>
-    body {
-      background: #000;
-      color: #fff;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
       font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background-color: #000;
+      color: #fff;
       padding: 20px;
     }
 
@@ -17,23 +24,31 @@
       max-width: 500px;
       margin: auto;
       background: #111;
-      padding: 20px;
+      padding: 25px;
       border-radius: 20px;
-      box-shadow: 0 0 10px gold;
+      box-shadow: 0 0 15px gold;
     }
 
     h2, h3 {
-      color: gold;
       text-align: center;
+      color: gold;
+      margin-bottom: 10px;
     }
 
-    .balance {
+    .balance, #timer {
+      text-align: center;
       font-size: 18px;
       margin-bottom: 15px;
     }
 
+    #timer {
+      color: orange;
+      font-weight: bold;
+      font-size: 22px;
+    }
+
     .section {
-      margin: 15px 0;
+      margin: 20px 0;
     }
 
     .options {
@@ -43,20 +58,23 @@
       justify-content: center;
     }
 
-    label {
-      background: #222;
-      padding: 10px 15px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-
     input[type="radio"] {
       display: none;
     }
 
+    label {
+      background: #222;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
     input[type="radio"]:checked + label {
       background: goldenrod;
-      color: black;
+      color: #000;
+      font-weight: bold;
     }
 
     input[type="number"] {
@@ -65,6 +83,8 @@
       margin-top: 10px;
       border-radius: 10px;
       border: none;
+      background: #222;
+      color: white;
     }
 
     button {
@@ -76,40 +96,46 @@
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      margin-top: 15px;
+      margin-top: 20px;
+      transition: 0.3s ease;
     }
 
-    .result, .status {
+    button:hover {
+      background: orange;
+    }
+
+    .status, .result {
       text-align: center;
       margin-top: 15px;
       font-weight: bold;
+      font-size: 16px;
     }
 
-    #timer {
-      font-size: 22px;
+    .footer-note {
       text-align: center;
-      color: orange;
-      margin-bottom: 10px;
+      margin-top: 30px;
+      font-size: 13px;
+      color: #888;
     }
   </style>
 </head>
 <body>
 
   <div class="game-container">
-    <h2>Jeet365</h2>
+    <h2>🎮 Jeet365 Game</h2>
     <div class="balance">Your Coins: <span id="coinBalance">0</span></div>
     <div id="timer">30s</div>
 
     <div class="section">
       <h3>Choose Color</h3>
       <div class="options">
-        <input type="radio" id="red" name="color" value="Red" />
+        <input type="radio" id="red" name="color" value="Red">
         <label for="red">🔴 Red</label>
 
-        <input type="radio" id="green" name="color" value="Green" />
+        <input type="radio" id="green" name="color" value="Green">
         <label for="green">🟢 Green</label>
 
-        <input type="radio" id="violet" name="color" value="Violet" />
+        <input type="radio" id="violet" name="color" value="Violet">
         <label for="violet">🟣 Violet</label>
       </div>
     </div>
@@ -117,7 +143,7 @@
     <div class="section">
       <h3>Or Choose Number</h3>
       <div class="options">
-        <!-- Number buttons 0-9 -->
+        <!-- Numbers 0-9 -->
         <script>
           for (let i = 0; i <= 9; i++) {
             document.write(`
@@ -131,7 +157,7 @@
 
     <div class="section">
       <h3>Bet Amount (Min 10)</h3>
-      <input type="number" id="betAmount" placeholder="Enter coins" />
+      <input type="number" id="betAmount" placeholder="Enter bet coins" min="10" />
     </div>
 
     <button id="betBtn">Place Bet</button>
@@ -140,7 +166,9 @@
     <div class="result" id="gameResult"></div>
   </div>
 
-  <!-- Firebase Config -->
+  <div class="footer-note">Play responsibly. Luck is unpredictable. 🎲</div>
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js"></script>
