@@ -1,38 +1,34 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+document.addEventListener("DOMContentLoaded", function () {
+  const userName = document.getElementById("userName");
+  const userCoins = document.getElementById("userCoins");
 
-import { firebaseConfig } from './firebase-config.js';
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-const userName = document.getElementById("userName");
-const userCoins = document.getElementById("userCoins");
-
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const uid = user.uid;
-    const userRef = doc(db, "users", uid);
-    const userSnap = await getDoc(userRef);
-    
-    if (userSnap.exists()) {
-      const data = userSnap.data();
-      userName.innerText = user.email;
-      userCoins.innerText = data.coins || 0;
+  auth.onAuthStateChanged(function (user) {
+    if (!user) {
+      window.location.href = "login.html";
     } else {
-      userName.innerText = "No data";
-      userCoins.innerText = 0;
-    }
-  } else {
-    window.location.href = "login.html";
-  }
-});
+      const uid = user.uid;
+      const userRef = db.collection("users").doc(uid);
 
-function logout() {
-  signOut(auth).then(() => {
-    window.location.href = "login.html";
+      userRef.onSnapshot(function (doc) {
+        if (doc.exists) {
+          const data = doc.data();
+          userName.textContent = data.name || user.email;
+          userCoins.textContent = data.coins !== undefined ? data.coins : "0";
+        } else {
+          userName.textContent = "No data";
+          userCoins.textContent = "0";
+        }
+      }, function (error) {
+        console.error("Error fetching user data:", error);
+      });
+    }
   });
-}
-window.logout = logout;
+
+  window.logout = function () {
+    auth.signOut().then(function () {
+      window.location.href = "login.html";
+    }).catch(function (error) {
+      console.error("Logout Error:", error);
+    });
+  };
+});
