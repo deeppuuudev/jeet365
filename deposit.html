@@ -1,48 +1,63 @@
+<!-- deposit.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jeet365 - Deposit</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Deposit Coins - Jeet365</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="js/firebase-config.js"></script>
 </head>
 <body>
-
-  <header class="top-header">
-    <h2>💰 Deposit Coins</h2>
-    <a href="dashboard.html" class="btn">← Back to Dashboard</a>
+  <header class="header">
+    <h1>💰 Deposit Coins</h1>
+    <nav>
+      <a href="dashboard.html">🏠 Dashboard</a>
+      <a href="color.html">🎯 Color Game</a>
+      <a href="withdraw.html">⬇ Withdraw</a>
+      <a href="#" onclick="logout()">🚪 Logout</a>
+    </nav>
   </header>
 
-  <section class="form-section">
-    <h3>📲 Send Payment via UPI</h3>
-    <p>Receiver UPI ID: <strong style="color:green;">deepak95754272@axl</strong></p>
+  <section class="deposit-section">
+    <h2>Pay & Get Coins</h2>
+    <p>📌 Minimum: ₹10 | 1 Coin = ₹1</p>
 
-    <form id="upiForm">
-      <input type="number" id="amount" placeholder="Enter Amount (₹)" required />
-      <button type="submit">Pay Now</button>
-    </form>
+    <div class="upi-box">
+      <p><strong>Pay to UPI ID:</strong></p>
+      <p class="upi-id">deepak95754272@axl</p>
+      <p>OR</p>
+      <p class="upi-id">7724941807@ybp</p>
+    </div>
 
-    <p>After payment, coins will be added manually by admin.</p>
+    <input type="number" id="depositAmount" placeholder="Enter Amount to Pay (₹)">
+    <button onclick="payNow()">🚀 Pay Now</button>
+
+    <div id="payMsg" class="status-msg"></div>
+
+    <p class="note">Note: No screenshot needed. Coins will be added manually by admin after payment.</p>
   </section>
 
   <script>
-    document.getElementById("upiForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const amount = document.getElementById("amount").value;
-      const upiID = "deepak95754272@axl";
-      const name = "Jeet365";
-      const note = "Jeet365 Coins Topup";
-      
-      if (amount < 10) {
-        alert("Minimum ₹10 required.");
+    function logout() {
+      auth.signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    }
+
+    function payNow() {
+      const amt = document.getElementById("depositAmount").value;
+      if (!amt || amt < 10) {
+        document.getElementById("payMsg").innerText = "❌ Minimum amount is ₹10.";
         return;
       }
 
-      const upiLink = `upi://pay?pa=${upiID}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
-
+      const upiLink = `upi://pay?pa=deepak95754272@axl&pn=Jeet365&cu=INR&am=${amt}`;
       window.location.href = upiLink;
-    });
+    }
   </script>
-
 </body>
 </html>
