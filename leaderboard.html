@@ -1,0 +1,89 @@
+<!-- leaderboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Leaderboard - Jeet365</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="js/firebase-config.js"></script>
+</head>
+<body>
+  <header class="header">
+    <h1>🏆 Top Winners</h1>
+    <a href="dashboard.html">⬅ Back</a>
+  </header>
+
+  <main class="leaderboard-container">
+    <table class="leaderboard">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>User</th>
+          <th>Total Wins</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboardBody">
+        <tr><td colspan="3">Loading...</td></tr>
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        loadLeaderboard();
+      }
+    });
+
+    async function loadLeaderboard() {
+      const winnersMap = {};
+
+      const colorWins = await db.collection("color_game")
+        .where("result", "==", "win")
+        .get();
+
+      colorWins.forEach(doc => {
+        const { email, bet } = doc.data();
+        if (!winnersMap[email]) winnersMap[email] = 0;
+        winnersMap[email] += bet * 2;
+      });
+
+      const numberWins = await db.collection("number_game")
+        .where("result", "==", "win")
+        .get();
+
+      numberWins.forEach(doc => {
+        const { email, bet } = doc.data();
+        if (!winnersMap[email]) winnersMap[email] = 0;
+        winnersMap[email] += bet * 8;
+      });
+
+      const sorted = Object.entries(winnersMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+
+      const tbody = document.getElementById("leaderboardBody");
+      tbody.innerHTML = "";
+
+      sorted.forEach(([email, winAmount], index) => {
+        const row = `<tr>
+          <td>${index + 1}</td>
+          <td>${email}</td>
+          <td>₹${winAmount}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+
+      if (sorted.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3">No winners yet</td></tr>`;
+      }
+    }
+  </script>
+</body>
+</html>
