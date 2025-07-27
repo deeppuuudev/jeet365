@@ -102,8 +102,8 @@
     <h2>Welcome to Jeet365</h2>
 
     <div class="info-box">
-      <span><strong>Email:</strong></span>
-      <span id="userEmail">Loading...</span>
+      <span><strong>User:</strong></span>
+      <span id="userName">Loading...</span>
     </div>
 
     <div class="info-box">
@@ -133,20 +133,20 @@
       if (!user) {
         window.location.href = "login.html";
       } else {
-        document.getElementById("userEmail").textContent = user.email;
-        getUserCoins(user.uid);
+        // Now fetch full user document
+        const userRef = db.collection("users").doc(user.uid);
+        userRef.onSnapshot((doc) => {
+          if (doc.exists) {
+            const data = doc.data();
+            document.getElementById("userName").textContent = data.name || "User";
+            document.getElementById("userCoins").textContent = data.coins || 0;
+          } else {
+            document.getElementById("userName").textContent = "User";
+            document.getElementById("userCoins").textContent = "0";
+          }
+        });
       }
     });
-
-    function getUserCoins(uid) {
-      db.collection("users").doc(uid).onSnapshot((doc) => {
-        if (doc.exists) {
-          document.getElementById("userCoins").textContent = doc.data().coins || 0;
-        } else {
-          document.getElementById("userCoins").textContent = "0";
-        }
-      });
-    }
 
     function logout() {
       auth.signOut().then(() => {
