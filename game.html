@@ -1,180 +1,77 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jeet365 - Color Prediction Game</title>
-  
-  <!-- Firebase CDN -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="js/firebase-config.js"></script>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeet365 - Game</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+  <script src="firebase-config.js" defer></script>
+  <script src="game.js" defer></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
-    }
-
-    body {
-      background: linear-gradient(to bottom, #ffffff, #ffe6cc);
-      color: #000;
-      padding: 20px;
-    }
-
-    header {
-      background-color: #ff9933;
-      padding: 20px;
-      text-align: center;
-      color: #fff;
-      font-size: 24px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-    }
-
-    nav {
-      margin-top: 10px;
-    }
-
-    nav a {
-      margin: 0 10px;
-      color: #fff;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .game-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .color-boxes {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .color-box {
-      width: 120px;
-      height: 120px;
-      border-radius: 16px;
-      color: #fff;
-      font-size: 20px;
-      font-weight: bold;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      transition: 0.3s ease;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-
-    .color-box:hover {
-      transform: scale(1.05);
-    }
-
-    .red { background-color: #e74c3c; }
-    .green { background-color: #27ae60; }
-    .violet { background-color: #8e44ad; }
-
-    .note {
-      margin-top: 10px;
-      color: #555;
-      font-size: 14px;
-    }
-
-    @media (max-width: 600px) {
-      .color-box {
-        width: 90px;
-        height: 90px;
-        font-size: 16px;
-      }
-    }
-
-    .whatsapp-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #25D366;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      padding: 15px;
-      font-size: 22px;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
+    body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
+    header { background: black; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+    header nav a { color: white; margin: 0 10px; text-decoration: none; font-weight: bold; }
+    .game-container { padding: 20px; }
+    .section-title { font-size: 1.5rem; margin: 10px 0; }
+    .color-options, .number-options { display: flex; justify-content: center; gap: 20px; margin-bottom: 15px; }
+    .color-box { background: white; padding: 10px 20px; border-radius: 10px; text-align: center; cursor: pointer; border: 2px solid #ccc; }
+    .color-box.red { color: red; }
+    .color-box.green { color: green; }
+    .color-box.violet { color: violet; }
+    .number-grid { display: grid; grid-template-columns: repeat(5, 60px); gap: 10px; justify-content: center; }
+    .number-box { background: white; border: 1px solid #999; border-radius: 5px; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; }
+    .bet-panel { text-align: center; margin-top: 20px; }
+    .recent-results { background: #fff; padding: 10px; margin-top: 30px; border-radius: 10px; }
+    .results-list { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .result-entry { background: #eee; padding: 5px 10px; border-radius: 5px; font-size: 0.9rem; }
+    .timer { font-weight: bold; text-align: center; margin-bottom: 10px; }
   </style>
 </head>
-
 <body>
   <header>
-    🎯 Jeet365 - Color Prediction
+    <div><strong>🌟 Jeet365 - Color Game</strong></div>
     <nav>
-      <a href="dashboard.html">Dashboard</a> |
-      <a href="deposit.html">Deposit</a> |
-      <a href="withdraw.html">Withdraw</a> |
-      <a href="#" onclick="logout()">Logout</a>
+      <a href="dashboard.html">🏠 Dashboard</a>
+      <a href="#">🔢 Number Game</a>
+      <a href="withdraw.html">💸 Withdraw</a>
+      <a href="#" onclick="logout()">🚪 Logout</a>
     </nav>
-  </header>
+  </header>  <div class="game-container">
+    <div class="timer">⏱ Time Left: <span id="timer">30</span>s</div><h2 class="section-title">Choose Your Color</h2>
+<div class="color-options">
+  <div class="color-box red" onclick="selectColor('red')">Red</div>
+  <div class="color-box violet" onclick="selectColor('violet')">Violet</div>
+  <div class="color-box green" onclick="selectColor('green')">Green</div>
+</div>
 
-  <div class="game-container">
-    <h2>🎨 Choose a Color</h2>
-    <div class="color-boxes">
-      <div class="color-box red" onclick="selectColor('Red')">Red</div>
-      <div class="color-box green" onclick="selectColor('Green')">Green</div>
-      <div class="color-box violet" onclick="selectColor('Violet')">Violet</div>
-    </div>
-    <p class="note">💡 Minimum 10 coins required to place a bet.</p>
+<h2 class="section-title">Choose Your Number</h2>
+<div class="number-grid">
+  <div class="number-box" onclick="selectNumber(0)">0</div>
+  <div class="number-box" onclick="selectNumber(1)">1</div>
+  <div class="number-box" onclick="selectNumber(2)">2</div>
+  <div class="number-box" onclick="selectNumber(3)">3</div>
+  <div class="number-box" onclick="selectNumber(4)">4</div>
+  <div class="number-box" onclick="selectNumber(5)">5</div>
+  <div class="number-box" onclick="selectNumber(6)">6</div>
+  <div class="number-box" onclick="selectNumber(7)">7</div>
+  <div class="number-box" onclick="selectNumber(8)">8</div>
+  <div class="number-box" onclick="selectNumber(9)">9</div>
+</div>
+
+<div class="bet-panel">
+  <input type="number" id="betAmount" placeholder="Enter Bet Amount" />
+  <button onclick="placeBet()">Place Bet</button>
+</div>
+
+<div class="recent-results">
+  <h3>Recent Results</h3>
+  <div class="results-list" id="resultsList">
+    <!-- Dynamic results -->
   </div>
+</div>
 
-  <button class="whatsapp-btn" onclick="window.open('https://wa.me/91YOURNUMBER', '_blank')">💬</button>
-
-  <script>
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (!user) {
-        window.location.href = "login.html";
-      }
-    });
-
-    function logout() {
-      firebase.auth().signOut().then(() => {
-        window.location.href = "login.html";
-      });
-    }
-
-    function selectColor(color) {
-      const amount = prompt(`Enter amount to bet on ${color}:`);
-      if (!amount || isNaN(amount) || parseInt(amount) < 10) {
-        alert("❌ Minimum 10 coins required.");
-        return;
-      }
-
-      const user = firebase.auth().currentUser;
-      if (!user) {
-        alert("User not logged in");
-        return;
-      }
-
-      firebase.firestore().collection("color_game").add({
-        uid: user.uid,
-        email: user.email,
-        color: color,
-        bet: parseInt(amount),
-        result: "pending",
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(() => {
-        alert(`✅ Bet placed on ${color} for ₹${amount}`);
-      }).catch(err => {
-        alert("❌ Error: " + err.message);
-      });
-    }
-  </script>
+  </div>
 </body>
 </html>
