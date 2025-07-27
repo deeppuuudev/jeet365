@@ -1,164 +1,151 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  updateDoc,
-  setDoc,
-  collection,
-  addDoc,
-  query,
-  orderBy,
-  limit,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import {
-  getAuth,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+// game.js
 
-// Firebase Config
-const firebaseConfig = {
-  apiKey: "AIzaSyAhp9goPQy1g4JQh_Jw0lc3mHv8dWqCy1Q",
-  authDomain: "jeet365-fabf2.firebaseapp.com",
-  projectId: "jeet365-fabf2",
-  storageBucket: "jeet365-fabf2.appspot.com",
-  messagingSenderId: "254181142456",
-  appId: "1:254181142456:web:283c3abe5a76c71bd0294d",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-let userId = null;
+let currentUser;
 let userCoins = 0;
-let currentBet = null;
-let timerInterval;
+let gameInterval;
 let countdown = 30;
 
-const coinsDisplay = document.getElementById("userCoins");
-const countdownDisplay = document.getElementById("countdown");
-const gameResult = document.getElementById("gameResult");
-const betInput = document.getElementById("betAmount");
-const buttons = document.querySelectorAll(".color-buttons button");
-
-onAuthStateChanged(auth, async (user) => {
+firebase.auth().onAuthStateChanged((user) => {
   if (user) {
-    userId = user.uid;
-    await loadUserCoins();
-    startGameLoop();
-    loadLastResults();
+    currentUser = user;
+    getUserCoins();
+    startGameTimer();
   } else {
-    alert("Please login first.");
     window.location.href = "login.html";
   }
 });
 
-async function loadUserCoins() {
-  const docRef = doc(db, "users", userId);
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    userCoins = docSnap.data().coins || 0;
-    coinsDisplay.textContent = userCoins;
-  }
+// Get user coins
+function getUserCoins() {
+  firebase.firestore().collection("users").doc(currentUser.uid).get()
+    .then(doc => {
+      userCoins = doc.data().coins || 0;
+      document.getElementById("coinBalance").innerText = userCoins;
+    });
 }
 
-function disableButtons(disable = true) {
-  buttons.forEach(btn => btn.disabled = disable);
+// Start 30-sec game timer
+function startGameTimer() {
+  updateTimerDisplay();
+  gameInterval = setInterval(() => {
+    countdown--;
+    updateTimerDisplay();
+
+    if (countdown <= 0) {
+      clearInterval(gameInterval);
+      showGameResult();
+      countdown = 30;
+      setTimeout(() => {
+        resetSelections();
+        startGameTimer();
+      }, 5000);
+    }
+  }, 1000);
 }
 
-function getRandomColor() {
-  const colors = ["Red", "Green", "Violet"];
-  const lossChance = Math.random();
-  return lossChance < 0.8 ? colors[Math.floor(Math.random() * colors.length)] : currentBet?.color || colors[0];
+function updateTimerDisplay() {
+  document.getElementById("timer").innerText = `${countdown}s`;
 }
 
-function placeBet(color) {
-  const amount = parseInt(betInput.value);
-  if (amount < 10 || isNaN(amount)) {
-    alert("Minimum 10 coins required to play.");
+// Place Bet
+document.getElementById("betBtn").addEventListener("click", () => {
+  const selectedColor = document.querySelector('input[name="color"]:checked')?.value;
+  const selectedNumber = document.querySelector('input[name="number"]:checked')?.value;
+  const betAmount = parseInt(document.getElementById("betAmount").value);
+
+  if ((!selectedColor && !selectedNumber) || isNaN(betAmount) || betAmount < 10) {
+    alert("Select a color or number and enter minimum 10 coins to bet.");
     return;
   }
 
-  if (userCoins < amount) {
+  if (userCoins < betAmount) {
     alert("Not enough coins.");
     return;
   }
 
-  if (currentBet) {
-    alert("Bet already placed for this round.");
-    return;
-  }
+  // Deduct coins
+  userCoins -= betAmount;
+  updateCoinsInFirestore(userCoins);
+  document.getElementById("coinBalance").innerText = userCoins;
 
-  currentBet = { color, amount };
-  disableButtons(true);
-  gameResult.textContent = `You bet ${amount} on ${color}`;
-}
+  // Store bet temporarily
+  sessionStorage.setItem("bet", JSON.stringify({
+    type: selectedColor ? "color" : "number",
+    value: selectedColor || selectedNumber,
+    amount: betAmount
+  }));
 
-function updateCountdownUI() {
-  countdownDisplay.textContent = countdown;
-}
+  document.getElementById("betStatus").innerText = "Bet placed!";
+});
 
-function startGameLoop() {
-  timerInterval = setInterval(async () => {
-    countdown--;
-
-    updateCountdownUI();
-
-    if (countdown === 0) {
-      disableButtons(true);
-      await resolveGame();
-      countdown = 30;
-      currentBet = null;
-    }
-
-    if (countdown <= 25 && !currentBet) {
-      disableButtons(false);
-    }
-
-  }, 1000);
-}
-
-async function resolveGame() {
+// Show game result
+function showGameResult() {
   const resultColor = getRandomColor();
-  let win = false;
+  const resultNumber = getRandomNumber();
+  const bet = JSON.parse(sessionStorage.getItem("bet"));
 
-  if (currentBet && currentBet.color === resultColor) {
-    userCoins += currentBet.amount * 2;
-    win = true;
-    gameResult.innerHTML = `<span style="color:green;">You WON! Result: ${resultColor}</span>`;
-  } else if (currentBet) {
-    userCoins -= currentBet.amount;
-    gameResult.innerHTML = `<span style="color:red;">You LOST! Result: ${resultColor}</span>`;
-  } else {
-    gameResult.innerHTML = `<span style="color:orange;">No Bet! Result: ${resultColor}</span>`;
+  document.getElementById("gameResult").innerHTML = `
+    Result Color: <b>${resultColor}</b><br>
+    Result Number: <b>${resultNumber}</b>
+  `;
+
+  // Check win
+  if (bet) {
+    let win = false;
+    let reward = 0;
+
+    if (bet.type === "color" && bet.value === resultColor) {
+      win = true;
+      reward = bet.amount * 2;
+    } else if (bet.type === "number" && bet.value === resultNumber.toString()) {
+      win = true;
+      reward = bet.amount * 8;
+    }
+
+    if (win) {
+      userCoins += reward;
+      updateCoinsInFirestore(userCoins);
+      document.getElementById("betStatus").innerText = `You won! +${reward} coins`;
+    } else {
+      document.getElementById("betStatus").innerText = `You lost!`;
+    }
+
+    sessionStorage.removeItem("bet");
+    document.getElementById("coinBalance").innerText = userCoins;
   }
-
-  coinsDisplay.textContent = userCoins;
-
-  // Save user coins
-  await updateDoc(doc(db, "users", userId), { coins: userCoins });
-
-  // Save game result
-  await addDoc(collection(db, "rounds"), {
-    result: resultColor,
-    createdAt: new Date()
-  });
-
-  loadLastResults();
 }
 
-async function loadLastResults() {
-  const roundsRef = collection(db, "rounds");
-  const q = query(roundsRef, orderBy("createdAt", "desc"), limit(10));
-  const querySnapshot = await getDocs(q);
-
-  let historyHTML = "<h3>Last 10 Results:</h3>";
-  querySnapshot.forEach(doc => {
-    const data = doc.data();
-    historyHTML += `<p>${data.result} - ${new Date(data.createdAt.toDate()).toLocaleTimeString()}</p>`;
+// Update coins in Firestore
+function updateCoinsInFirestore(newCoins) {
+  firebase.firestore().collection("users").doc(currentUser.uid).update({
+    coins: newCoins
   });
-document.getElementById("gameHistory").innerHTML = historyHTML;
-  document.getElementById("gameResult").innerHTML += historyHTML;
+}
+
+// Logic to return 80% loss, 20% win
+function getRandomColor() {
+  const colors = ["Red", "Green", "Violet"];
+  return Math.random() < 0.2 ? colors[Math.floor(Math.random() * 3)] : getLosingColor();
+}
+
+function getLosingColor() {
+  const bet = JSON.parse(sessionStorage.getItem("bet"));
+  const colors = ["Red", "Green", "Violet"];
+  return colors.filter(c => c !== bet?.value)[Math.floor(Math.random() * 2)];
+}
+
+function getRandomNumber() {
+  if (Math.random() < 0.2) {
+    return parseInt(JSON.parse(sessionStorage.getItem("bet"))?.value || "0");
+  } else {
+    let wrong = Math.floor(Math.random() * 10);
+    const betNum = parseInt(JSON.parse(sessionStorage.getItem("bet"))?.value);
+    return (wrong === betNum) ? (wrong + 1) % 10 : wrong;
   }
+}
+
+function resetSelections() {
+  document.querySelectorAll('input[name="color"], input[name="number"]').forEach(e => e.checked = false);
+  document.getElementById("betAmount").value = "";
+  document.getElementById("betStatus").innerText = "";
+}
