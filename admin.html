@@ -1,15 +1,105 @@
-<!-- admin.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Admin Panel - Jeet365</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="js/firebase-config.js"></script>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff;
+      color: #111;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header {
+      background-color: #ff6600;
+      color: white;
+      padding: 16px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .header button {
+      background-color: #ffd700;
+      border: none;
+      padding: 8px 14px;
+      color: black;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .admin-section {
+      padding: 20px;
+    }
+
+    .admin-section h2 {
+      margin-top: 30px;
+      margin-bottom: 10px;
+      font-size: 20px;
+      color: #ff6600;
+    }
+
+    .admin-card {
+      background-color: #fff8e1;
+      border: 2px solid #ffd700;
+      padding: 16px;
+      margin-bottom: 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    }
+
+    .admin-card p {
+      margin: 5px 0;
+    }
+
+    .admin-card button {
+      margin-right: 10px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .admin-card button:first-child {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .admin-card button:last-child {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 18px;
+      }
+      .admin-card {
+        font-size: 15px;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="header">
