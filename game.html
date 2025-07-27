@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jeet365 - Game</title>
@@ -10,23 +9,40 @@
   <script src="firebase-config.js" defer></script>
   <script src="game.js" defer></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
-    header { background: black; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
-    header nav a { color: white; margin: 0 10px; text-decoration: none; font-weight: bold; }
-    .game-container { padding: 20px; }
-    .section-title { font-size: 1.5rem; margin: 10px 0; }
-    .color-options, .number-options { display: flex; justify-content: center; gap: 20px; margin-bottom: 15px; }
-    .color-box { background: white; padding: 10px 20px; border-radius: 10px; text-align: center; cursor: pointer; border: 2px solid #ccc; }
-    .color-box.red { color: red; }
-    .color-box.green { color: green; }
-    .color-box.violet { color: violet; }
-    .number-grid { display: grid; grid-template-columns: repeat(5, 60px); gap: 10px; justify-content: center; }
-    .number-box { background: white; border: 1px solid #999; border-radius: 5px; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; }
-    .bet-panel { text-align: center; margin-top: 20px; }
-    .recent-results { background: #fff; padding: 10px; margin-top: 30px; border-radius: 10px; }
-    .results-list { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-    .result-entry { background: #eee; padding: 5px 10px; border-radius: 5px; font-size: 0.9rem; }
-    .timer { font-weight: bold; text-align: center; margin-bottom: 10px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f9f9f9; padding-bottom: 50px; }
+    header { background: black; color: white; padding: 15px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; }
+    header nav { display: flex; flex-wrap: wrap; gap: 10px; }
+    header nav a { color: white; text-decoration: none; font-weight: bold; padding: 5px 10px; border-radius: 5px; transition: background 0.3s; }
+    header nav a:hover { background: #333; }.game-container { padding: 20px; max-width: 800px; margin: auto; }
+.section-title { font-size: 1.5rem; margin: 20px 0 10px; text-align: center; }
+
+.color-options { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+.color-box { background: white; padding: 15px 25px; border-radius: 10px; text-align: center; cursor: pointer; border: 2px solid #ccc; font-weight: bold; font-size: 1.2rem; width: 100px; }
+.color-box.red { color: red; }
+.color-box.green { color: green; }
+.color-box.violet { color: violet; }
+
+.number-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; justify-content: center; margin-top: 15px; }
+.number-box { background: white; border: 1px solid #999; border-radius: 5px; padding: 15px 0; text-align: center; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
+
+.bet-panel { text-align: center; margin-top: 20px; }
+.bet-panel input[type="number"] { padding: 8px 12px; width: 200px; border-radius: 5px; border: 1px solid #ccc; margin-right: 10px; }
+.bet-panel button { padding: 8px 15px; background: black; color: white; border: none; border-radius: 5px; cursor: pointer; }
+.bet-panel button:hover { background: #333; }
+
+.recent-results { background: #fff; padding: 15px; margin-top: 30px; border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+.recent-results h3 { text-align: center; margin-bottom: 15px; }
+.results-list { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.result-entry { background: #eee; padding: 5px 10px; border-radius: 5px; font-size: 0.9rem; }
+
+.timer { font-weight: bold; text-align: center; margin-bottom: 15px; font-size: 1.2rem; }
+
+@media (max-width: 600px) {
+  .color-box, .number-box { width: 60px; font-size: 1rem; padding: 10px 0; }
+  .bet-panel input[type="number"] { width: 150px; }
+}
+
   </style>
 </head>
 <body>
