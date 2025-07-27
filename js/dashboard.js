@@ -1,34 +1,33 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const userName = document.getElementById("userName");
-  const userCoins = document.getElementById("userCoins");
+// ✅ Firebase Auth State Check
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    const userId = user.uid;
 
-  auth.onAuthStateChanged(function (user) {
-    if (!user) {
-      window.location.href = "login.html";
-    } else {
-      const uid = user.uid;
-      const userRef = db.collection("users").doc(uid);
-
-      userRef.onSnapshot(function (doc) {
-        if (doc.exists) {
-          const data = doc.data();
-          userName.textContent = data.name || user.email;
-          userCoins.textContent = data.coins !== undefined ? data.coins : "0";
-        } else {
-          userName.textContent = "No data";
-          userCoins.textContent = "0";
-        }
-      }, function (error) {
-        console.error("Error fetching user data:", error);
-      });
+    try {
+      const doc = await db.collection("users").doc(userId).get();
+      if (doc.exists) {
+        const userData = doc.data();
+        document.getElementById("userName").textContent = userData.name || user.email;
+        document.getElementById("userCoins").textContent = userData.coins ?? 0;
+      } else {
+        document.getElementById("userName").textContent = "Unknown User";
+        document.getElementById("userCoins").textContent = "0";
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
     }
-  });
 
-  window.logout = function () {
-    auth.signOut().then(function () {
-      window.location.href = "login.html";
-    }).catch(function (error) {
-      console.error("Logout Error:", error);
-    });
-  };
+  } else {
+    // 🔒 User not logged in → redirect to login
+    window.location.href = "login.html";
+  }
 });
+
+// 🚪 Logout Function
+function logout() {
+  auth.signOut().then(() => {
+    window.location.href = "login.html";
+  }).catch((error) => {
+    console.error("Logout Error:", error);
+  });
+}
