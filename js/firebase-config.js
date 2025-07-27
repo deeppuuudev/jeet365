@@ -1,4 +1,4 @@
-// firebase-config.js
+// js/firebase-config.js
 
 // Initialize Firebase only if not already initialized
 if (!firebase.apps.length) {
@@ -13,10 +13,10 @@ if (!firebase.apps.length) {
     measurementId: "G-EH0F3Q96F5"
   };
 
-  // 🔥 Initialize Firebase App
+  // 🔥 Initialize Firebase
   firebase.initializeApp(firebaseConfig);
 }
 
-// ✅ Global Firebase Services (for use in all pages)
+// ✅ Global Firebase Services
 const auth = firebase.auth();
 const db = firebase.firestore();
