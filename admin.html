@@ -1,1 +1,112 @@
+<!-- admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel - Jeet365</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="js/firebase-config.js"></script>
+</head>
+<body>
+  <header class="header">
+    <h1>🛠 Admin Panel</h1>
+    <button onclick="logout()">Logout</button>
+  </header>
 
+  <section class="admin-section">
+    <h2>Deposit Requests</h2>
+    <div id="depositRequests"></div>
+
+    <h2>Withdrawal Requests</h2>
+    <div id="withdrawRequests"></div>
+  </section>
+
+  <script>
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    }
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        if (user.email !== "deepworkhome100@gmail.com") {
+          alert("Access Denied!");
+          window.location.href = "dashboard.html";
+        } else {
+          loadRequests();
+        }
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    function loadRequests() {
+      const depositContainer = document.getElementById("depositRequests");
+      db.collection("deposits").where("status", "==", "pending").onSnapshot((snapshot) => {
+        depositContainer.innerHTML = "";
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          depositContainer.innerHTML += `
+            <div class="admin-card">
+              <p>📧 ${data.email}</p>
+              <p>💰 Amount: ${data.amount}</p>
+              <button onclick="approveDeposit('${doc.id}', '${data.uid}', ${data.amount})">✅ Approve</button>
+              <button onclick="rejectRequest('deposits', '${doc.id}')">❌ Reject</button>
+            </div>
+          `;
+        });
+      });
+
+      const withdrawContainer = document.getElementById("withdrawRequests");
+      db.collection("withdrawals").where("status", "==", "pending").onSnapshot((snapshot) => {
+        withdrawContainer.innerHTML = "";
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          withdrawContainer.innerHTML += `
+            <div class="admin-card">
+              <p>📧 ${data.email}</p>
+              <p>💸 Amount: ${data.amount}</p>
+              <button onclick="approveWithdraw('${doc.id}', '${data.uid}', ${data.amount})">✅ Approve</button>
+              <button onclick="rejectRequest('withdrawals', '${doc.id}')">❌ Reject</button>
+            </div>
+          `;
+        });
+      });
+    }
+
+    function approveDeposit(docId, uid, amount) {
+      const userRef = db.collection("users").doc(uid);
+      userRef.update({
+        coins: firebase.firestore.FieldValue.increment(amount)
+      }).then(() => {
+        db.collection("deposits").doc(docId).update({ status: "approved" });
+      });
+    }
+
+    function approveWithdraw(docId, uid, amount) {
+      const userRef = db.collection("users").doc(uid);
+      userRef.get().then((doc) => {
+        const currentCoins = doc.data().coins || 0;
+        if (currentCoins >= amount) {
+          userRef.update({
+            coins: currentCoins - amount
+          }).then(() => {
+            db.collection("withdrawals").doc(docId).update({ status: "approved" });
+          });
+        } else {
+          alert("User doesn't have enough coins.");
+        }
+      });
+    }
+
+    function rejectRequest(collection, docId) {
+      db.collection(collection).doc(docId).update({ status: "rejected" });
+    }
+  </script>
+</body>
+</html>
