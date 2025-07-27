@@ -1,102 +1,72 @@
+<!-- withdraw.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jeet365 - Withdraw</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Withdraw Coins - Jeet365</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="js/firebase-config.js"></script>
 </head>
 <body>
-
-  <header class="top-header">
-    <h2>🧾 Withdraw Coins</h2>
-    <a href="dashboard.html" class="btn">← Back to Dashboard</a>
+  <header class="header">
+    <h1>⬇ Withdraw Request</h1>
+    <nav>
+      <a href="dashboard.html">🏠 Dashboard</a>
+      <a href="color.html">🎯 Color Game</a>
+      <a href="deposit.html">💰 Deposit</a>
+      <a href="#" onclick="logout()">🚪 Logout</a>
+    </nav>
   </header>
 
-  <section class="form-section">
-    <h3>Withdraw Request Form</h3>
+  <section class="withdraw-section">
+    <h2>Request Withdrawal</h2>
+    <p>📌 Minimum: 50 Coins</p>
 
-    <p>⚠️ Minimum ₹50 required to request withdrawal.</p>
+    <input type="number" id="withdrawAmount" placeholder="Enter amount to withdraw">
+    <button onclick="requestWithdraw()">Submit Request</button>
 
-    <form id="withdrawForm">
-      <input type="number" id="amount" placeholder="Enter amount (₹)" required /><br />
-      <input type="text" id="upi" placeholder="Your UPI ID or Bank Info" required /><br />
-      <textarea id="note" placeholder="Note (optional)"></textarea><br />
-      <button type="submit">Submit Request</button>
-    </form>
-    <p id="withdrawMsg"></p>
+    <div id="withdrawMsg" class="status-msg"></div>
   </section>
 
-  <!-- Firebase Script -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  <script>
+    function logout() {
+      auth.signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    }
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBo47HJZAcS8nCEyntKPAJLeJg_zUTo1nw",
-      authDomain: "jeet365-e0749.firebaseapp.com",
-      projectId: "jeet365-e0749",
-      storageBucket: "jeet365-e0749.appspot.com",
-      messagingSenderId: "856388622116",
-      appId: "1:856388622116:web:f2313da855969554e405b1",
-      measurementId: "G-EH0F3Q96F5"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const form = document.getElementById("withdrawForm");
-    const msg = document.getElementById("withdrawMsg");
-
-    let currentUser = null;
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUser = user;
-      } else {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (!user) {
         window.location.href = "login.html";
       }
     });
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    function requestWithdraw() {
+      const amount = parseInt(document.getElementById("withdrawAmount").value);
+      const user = firebase.auth().currentUser;
 
-      const amount = parseInt(document.getElementById("amount").value);
-      const upi = document.getElementById("upi").value.trim();
-      const note = document.getElementById("note").value.trim();
-
-      if (amount < 50) {
-        msg.innerText = "❌ Minimum ₹50 required for withdrawal.";
+      if (!amount || amount < 50) {
+        document.getElementById("withdrawMsg").innerText = "❌ Minimum 50 coins required.";
         return;
       }
 
-      if (!upi) {
-        msg.innerText = "❌ UPI/Bank Info is required.";
-        return;
-      }
-
-      try {
-        await addDoc(collection(db, "requests"), {
-          type: "withdraw",
-          uid: currentUser.uid,
-          email: currentUser.email,
-          amount: amount,
-          paymentInfo: upi,
-          note: note || "",
-          status: "pending",
-          createdAt: serverTimestamp()
-        });
-
-        msg.innerText = "✅ Withdrawal request submitted!";
-        form.reset();
-      } catch (error) {
-        console.error(error);
-        msg.innerText = "❌ Failed to submit withdrawal request.";
-      }
-    });
+      db.collection("withdrawals").add({
+        uid: user.uid,
+        email: user.email,
+        amount: amount,
+        status: "pending",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        document.getElementById("withdrawMsg").innerText = "✅ Request submitted. Wait for admin approval.";
+        document.getElementById("withdrawAmount").value = "";
+      }).catch((err) => {
+        document.getElementById("withdrawMsg").innerText = "❌ Error: " + err.message;
+      });
+    }
   </script>
-
 </body>
 </html>
