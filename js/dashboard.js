@@ -1,49 +1,41 @@
 // dashboard.js
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// Ensure Firebase Config is already imported in your HTML via firebase-config.js
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyBo47HJZAcS8nCEyntKPAJLeJg_zUTo1nw",
-  authDomain: "jeet365-e0749.firebaseapp.com",
-  projectId: "jeet365-e0749",
-  storageBucket: "jeet365-e0749.appspot.com",
-  messagingSenderId: "856388622116",
-  appId: "1:856388622116:web:f2313da855969554e405b1",
-  measurementId: "G-EH0F3Q96F5"
-};
+// DOM References
+const userNameEl = document.getElementById("userName");
+const userCoinsEl = document.getElementById("userCoins");
 
-// Init services
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// DOM elements
-const userEmail = document.getElementById("userEmail");
-const userCoins = document.getElementById("userCoins");
-const logoutBtn = document.getElementById("logoutBtn");
-
-// Check auth status
-onAuthStateChanged(auth, async (user) => {
+// On auth state change, fetch and display user document
+auth.onAuthStateChanged((user) => {
   if (user) {
-    userEmail.innerText = user.email;
-    const userRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(userRef);
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      userCoins.innerText = data.coins || 0;
-    } else {
-      userCoins.innerText = "0";
-    }
+    const userRef = db.collection("users").doc(user.uid);
+
+    userRef.onSnapshot((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        userNameEl.textContent = data.name || user.email;
+        userCoinsEl.textContent = data.coins != null ? data.coins : "0";
+      } else {
+        console.warn("User document not found.");
+        userNameEl.textContent = user.email;
+        userCoinsEl.textContent = "0";
+      }
+    }, (error) => {
+      console.error("Error reading user data:", error);
+    });
   } else {
     window.location.href = "login.html";
   }
 });
 
-// Logout
-logoutBtn.addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
-});
+// Logout function
+window.logout = function() {
+  auth.signOut().then(() => {
+    window.location.href = "login.html";
+  }).catch((err) => {
+    console.error("Logout failed:", err);
+  });
+};
