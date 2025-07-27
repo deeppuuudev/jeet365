@@ -3,9 +3,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Number Game - Jeet365</title>
+  <title>Number Prediction - Jeet365</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -13,94 +13,132 @@
 </head>
 <body>
   <header class="header">
-    <h1>🔢 Jeet365 - Number Game</h1>
-    <nav>
-      <a href="dashboard.html">🏠 Dashboard</a>
-      <a href="color.html">🎯 Color Game</a>
-      <a href="withdraw.html">⬇ Withdraw</a>
-      <a href="#" onclick="logout()">🚪 Logout</a>
-    </nav>
+    <h1>🎯 Number Game</h1>
+    <a href="dashboard.html">⬅ Back</a>
   </header>
 
-  <section class="game">
-    <h2>Pick a Number (0–9)</h2>
-    <p>Win 8x your bet on correct guess!</p>
-
-    <div class="timer">⏱ Time Left: <span id="timer">30</span>s</div>
-
-    <div class="number-buttons">
-      <!-- 0 to 9 buttons -->
-      <div id="numberGrid"></div>
+  <main class="game-container">
+    <div class="timer">
+      <p>⏳ Time Left: <span id="timer">30</span>s</p>
     </div>
 
-    <input type="number" id="betAmount" placeholder="Enter Bet Amount (Min 10)">
-    <div id="resultBox"></div>
-  </section>
+    <div class="balance">
+      <strong>Your Coins:</strong> <span id="userCoins">--</span>
+    </div>
+
+    <div class="game-box">
+      <label>Choose a number (0-9):</label>
+      <input type="number" id="chosenNumber" min="0" max="9" />
+
+      <label>Enter bet (Min 10):</label>
+      <input type="number" id="betAmount" min="10" />
+
+      <button onclick="placeBet()">Place Bet</button>
+    </div>
+
+    <div class="result-box">
+      <h2 id="resultText">Waiting for round result...</h2>
+    </div>
+  </main>
 
   <script>
-    let timer = 30;
+    let currentUser = null;
+    let timeLeft = 30;
     let gameInterval;
-    let chosenNumber = null;
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        currentUser = user;
+        loadCoins();
+        startTimer();
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    function loadCoins() {
+      db.collection("users").doc(currentUser.uid).onSnapshot((doc) => {
+        const data = doc.data();
+        document.getElementById("userCoins").innerText = data.coins || 0;
+      });
+    }
+
+    function placeBet() {
+      const number = parseInt(document.getElementById("chosenNumber").value);
+      const bet = parseInt(document.getElementById("betAmount").value);
+
+      if (isNaN(number) || number < 0 || number > 9 || isNaN(bet) || bet < 10) {
+        alert("Invalid input");
+        return;
+      }
+
+      const userRef = db.collection("users").doc(currentUser.uid);
+      userRef.get().then((doc) => {
+        const userCoins = doc.data().coins || 0;
+        if (userCoins < bet) {
+          alert("Not enough coins!");
+          return;
+        }
+
+        // Deduct bet amount
+        userRef.update({
+          coins: userCoins - bet
+        });
+
+        const gameRef = db.collection("number_game").doc(currentUser.uid + "_" + Date.now());
+        gameRef.set({
+          uid: currentUser.uid,
+          email: currentUser.email,
+          chosen: number,
+          bet: bet,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          result: "pending"
+        });
+
+        document.getElementById("resultText").innerText = "✅ Bet placed! Waiting for result...";
+      });
+    }
 
     function startTimer() {
       gameInterval = setInterval(() => {
-        timer--;
-        document.getElementById("timer").textContent = timer;
-        if (timer === 0) {
+        if (timeLeft > 0) {
+          timeLeft--;
+          document.getElementById("timer").innerText = timeLeft;
+        } else {
           clearInterval(gameInterval);
-          showResult();
-          setTimeout(() => {
-            timer = 30;
-            startTimer();
-          }, 3000);
+          fetchResult();
         }
       }, 1000);
     }
 
-    function generateButtons() {
-      const grid = document.getElementById("numberGrid");
-      for (let i = 0; i < 10; i++) {
-        const btn = document.createElement("button");
-        btn.innerText = i;
-        btn.onclick = () => pickNumber(i);
-        btn.className = "number-btn";
-        grid.appendChild(btn);
-      }
+    function fetchResult() {
+      const result = Math.floor(Math.random() * 10);
+      const win = Math.random() < 0.2; // 20% win logic
+
+      db.collection("number_game").where("uid", "==", currentUser.uid)
+        .orderBy("timestamp", "desc").limit(1).get().then(snapshot => {
+          const doc = snapshot.docs[0];
+          const data = doc.data();
+
+          if (!data || data.result !== "pending") return;
+
+          if (win && data.chosen === result) {
+            const winAmount = data.bet * 8;
+            db.collection("users").doc(currentUser.uid).update({
+              coins: firebase.firestore.FieldValue.increment(winAmount)
+            });
+            db.collection("number_game").doc(doc.id).update({ result: "win" });
+            document.getElementById("resultText").innerText = `🎉 You WON! Number was ${result}`;
+          } else {
+            db.collection("number_game").doc(doc.id).update({ result: "lose" });
+            document.getElementById("resultText").innerText = `❌ You LOST! Number was ${result}`;
+          }
+
+          // Reset timer
+          timeLeft = 30;
+          startTimer();
+        });
     }
-
-    function pickNumber(num) {
-      chosenNumber = num;
-      document.getElementById("resultBox").innerHTML = `🕒 You selected <strong>${num}</strong>`;
-    }
-
-    function showResult() {
-      if (chosenNumber === null) {
-        document.getElementById("resultBox").innerHTML = `<p>⚠️ You didn’t select a number.</p>`;
-        return;
-      }
-
-      const winNumber = Math.floor(Math.random() * 10);
-      const winChance = Math.random() < 0.2; // 20% win
-
-      const resultNumber = winChance ? chosenNumber : winNumber;
-
-      document.getElementById("resultBox").innerHTML = `
-        <p>🔔 Result: <strong>${resultNumber}</strong></p>
-        ${resultNumber == chosenNumber ? '<p>🎉 You Win 8x!</p>' : '<p>❌ You Lose!</p>'}
-      `;
-
-      // TODO: Firebase coin deduction + reward logic
-      chosenNumber = null;
-    }
-
-    function logout() {
-      auth.signOut().then(() => {
-        window.location.href = "login.html";
-      });
-    }
-
-    generateButtons();
-    startTimer();
   </script>
 </body>
 </html>
