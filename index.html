@@ -1,44 +1,161 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Jeet365 - Play & Win</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jeet365 - Color & Number Prediction</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom, #ffffff, #fff4e0);
+      color: #000;
+    }
+
+    header {
+      background-color: #ffcc00;
+      padding: 20px;
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      color: #000;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    nav {
+      background-color: #ffa500;
+      text-align: center;
+      padding: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .section {
+      padding: 30px 20px;
+    }
+
+    .highlight-box {
+      background: #ffd700;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: #d48a00;
+      font-size: 22px;
+      margin-top: 0;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .cta-button {
+      background: #ff6600;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      margin-top: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .cta-button:hover {
+      background: #ff4400;
+    }
+
+    .whatsapp-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #25d366;
+      color: white;
+      border-radius: 50%;
+      padding: 15px;
+      font-size: 24px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      text-decoration: none;
+    }
+
+    footer {
+      background: #eee;
+      padding: 15px;
+      text-align: center;
+      font-size: 14px;
+      color: #444;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        font-size: 24px;
+      }
+
+      nav {
+        font-size: 16px;
+      }
+
+      .highlight-box {
+        padding: 15px;
+      }
+
+      .cta-button {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <header class="header">
-    <h1>Jeet365</h1>
-    <nav>
-      <a href="login.html">Login</a>
-      <a href="signup.html">Signup</a>
-    </nav>
-  </header>
 
-  <section class="hero">
-    <h2>India's Most Trusted Prediction Platform</h2>
-    <p>Play Color & Number Games, Win Real Coins!</p>
-    <a href="signup.html" class="btn">Join Now</a>
-  </section>
+  <header>Jeet365</header>
 
-  <section class="features">
-    <div class="feature-card">
-      <h3>🎯 Color Game</h3>
-      <p>Red / Green / Violet — Win 2x Instantly</p>
-    </div>
-    <div class="feature-card">
-      <h3>🔢 Number Game</h3>
-      <p>Pick 0-9 and Win 8x your Coins</p>
-    </div>
-    <div class="feature-card">
-      <h3>💳 Instant UPI Payment</h3>
-      <p>Pay directly to admin – No waiting, No screenshots</p>
-    </div>
-  </section>
+  <nav>Login | Signup</nav>
 
-  <footer>
-    <p>© 2025 Jeet365. Built by Deepak</p>
-  </footer>
+  <div class="section">
+    <div class="highlight-box">
+      <h2>India's Most Trusted Prediction Platform</h2>
+      <p>Play Color & Number Games, Win Real Coins Instantly!</p>
+      <button class="cta-button">Join Now</button>
+    </div>
+
+    <div class="highlight-box">
+      <h2>🎯 Color Game</h2>
+      <p>Choose Red / Green / Violet – Win 2x Instantly</p>
+    </div>
+
+    <div class="highlight-box">
+      <h2>🔢 Number Game</h2>
+      <p>Pick a Number 0-9 – Win 8x Your Coins</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="highlight-box">
+      <h2>💰 Instant UPI Payment</h2>
+      <p>Pay directly to Admin – No Waiting, No Screenshots Required</p>
+    </div>
+
+    <div class="highlight-box">
+      <h2>📜 Terms & Conditions</h2>
+      <p>
+        1. Coins are non-refundable after placing a bet. <br/>
+        2. Admin reserves the right to block fake or spam users. <br/>
+        3. Withdrawals processed within 24 hours. <br/>
+        4. Games run on smart AI-based results (80% loss, 20% win).
+      </p>
+    </div>
+  </div>
+
+  <a class="whatsapp-button" href="https://wa.me/917724941807" target="_blank">📱</a>
+
+  <footer>© 2025 Jeet365. Built by Deepak</footer>
+
 </body>
 </html>
