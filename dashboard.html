@@ -4,11 +4,16 @@
   <meta charset="UTF-8" />
   <title>Dashboard - Jeet365</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Firebase SDKs (v8) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <!-- Config and App Scripts -->
   <script src="js/firebase-config.js"></script>
-  <script src="js/dashboard.js"></script>
+  <script src="js/dashboard.js" defer></script>
+
   <style>
     body {
       margin: 0;
@@ -96,7 +101,6 @@
   </style>
 </head>
 <body>
-
   <header>🏆 Jeet365 Dashboard</header>
 
   <div class="container">
@@ -104,12 +108,12 @@
 
     <div class="info-box">
       <span><strong>User:</strong></span>
-      <span id="userName"></span>
+      <span id="userName">Loading...</span>
     </div>
 
     <div class="info-box">
       <span><strong>Coins:</strong></span>
-      <span id="userCoins"></span>
+      <span id="userCoins">Loading...</span>
     </div>
 
     <div class="buttons">
@@ -125,39 +129,5 @@
 
     <div class="footer">© 2025 Jeet365 | Powered by Firebase</div>
   </div>
-
-  <script>
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    auth.onAuthStateChanged((user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        const userRef = db.collection("users").doc(user.uid);
-
-        userRef.onSnapshot((doc) => {
-          if (doc.exists) {
-            const data = doc.data();
-            document.getElementById("userName").textContent = data.name || user.email;
-            document.getElementById("userCoins").textContent = data.coins !== undefined ? data.coins : "0";
-          } else {
-            document.getElementById("userName").textContent = "Not Found";
-            document.getElementById("userCoins").textContent = "0";
-          }
-        }, (error) => {
-          console.error("Error fetching user data:", error);
-        });
-      }
-    });
-
-    function logout() {
-      auth.signOut().then(() => {
-        window.location.href = "login.html";
-      }).catch((error) => {
-        console.error("Logout Error:", error);
-      });
-    }
-  </script>
 </body>
-                                      </html>
+</html>
