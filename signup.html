@@ -1,11 +1,89 @@
-<!-- signup.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Signup - Jeet365</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+
+  <!-- Internal CSS -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #fff8f0, #ffecd2);
+      color: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .form-container {
+      background-color: #ffffff;
+      padding: 40px 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(255, 165, 0, 0.3);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      border: 2px solid #ffa500;
+    }
+
+    .form-container h2 {
+      margin-bottom: 10px;
+      color: #ff6f00;
+      font-size: 28px;
+    }
+
+    .form-container p {
+      margin-bottom: 20px;
+      font-size: 16px;
+      color: #444;
+    }
+
+    .form-container input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 2px solid #ffa726;
+      border-radius: 10px;
+      outline: none;
+      font-size: 16px;
+    }
+
+    .form-container input:focus {
+      border-color: #fb8c00;
+      box-shadow: 0 0 5px rgba(251, 140, 0, 0.5);
+    }
+
+    .form-container button {
+      width: 100%;
+      padding: 12px;
+      background-color: #ff9800;
+      color: #fff;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .form-container button:hover {
+      background-color: #fb8c00;
+    }
+
+    .form-container a {
+      color: #ff6f00;
+      text-decoration: none;
+    }
+
+    .form-container a:hover {
+      text-decoration: underline;
+    }
+  </style>
+
+  <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -44,4 +122,4 @@
     }
   </script>
 </body>
-</html>
+                                        </html>
