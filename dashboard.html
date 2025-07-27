@@ -1,19 +1,117 @@
-<!-- dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Dashboard - Jeet365</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #fffefc;
+      color: #111;
+    }
+
+    .header {
+      background: linear-gradient(45deg, orange, goldenrod);
+      padding: 15px 10px;
+      text-align: center;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .header nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .header nav a {
+      background: white;
+      color: black;
+      padding: 8px 14px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: 0.3s;
+      box-shadow: 1px 1px 4px #999;
+    }
+
+    .header nav a:hover {
+      background: goldenrod;
+      color: white;
+    }
+
+    .dashboard {
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .dashboard h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .dashboard p {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #coinBalance {
+      color: goldenrod;
+    }
+
+    .whatsapp-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #25D366;
+      color: white;
+      padding: 14px 16px;
+      border-radius: 50%;
+      font-size: 24px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.3);
+      text-decoration: none;
+      z-index: 999;
+    }
+
+    @media screen and (max-width: 600px) {
+      .header nav a {
+        font-size: 13px;
+        padding: 6px 10px;
+      }
+
+      .dashboard h2 {
+        font-size: 18px;
+      }
+    }
+  </style>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="js/firebase-config.js"></script>
 </head>
 <body>
+
   <header class="header">
-    <h1>Jeet365</h1>
+    <h1>Jeet365 - Dashboard</h1>
     <nav>
       <a href="color.html">🎯 Color Game</a>
       <a href="number.html">🔢 Number Game</a>
@@ -26,8 +124,11 @@
 
   <section class="dashboard">
     <h2>Welcome, <span id="userEmail"></span></h2>
-    <p>Your Coin Balance: <strong id="coinBalance">Loading...</strong> 🪙</p>
+    <p>Your Coin Balance: <span id="coinBalance">Loading...</span> 🪙</p>
   </section>
+
+  <!-- WhatsApp Support Button -->
+  <a class="whatsapp-button" href="https://wa.me/919123456789" target="_blank">💬</a>
 
   <script>
     auth.onAuthStateChanged((user) => {
@@ -51,5 +152,6 @@
       });
     }
   </script>
+
 </body>
 </html>
