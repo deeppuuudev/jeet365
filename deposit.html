@@ -5,7 +5,150 @@
   <meta charset="UTF-8">
   <title>Deposit Coins - Jeet365</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background-color: #0d0d0d;
+      color: #f1f1f1;
+      line-height: 1.6;
+      padding-bottom: 40px;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(to right, #ff9900, #ff3300);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      color: #fff;
+    }
+
+    .header nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .header nav a {
+      color: #fff;
+      text-decoration: none;
+      padding: 6px 12px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+
+    .header nav a:hover {
+      background-color: #000;
+    }
+
+    /* Deposit Section */
+    .deposit-section {
+      max-width: 500px;
+      margin: 2rem auto;
+      background: #1c1c1c;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #ff9900;
+    }
+
+    .deposit-section h2 {
+      color: #ffcc00;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+    .deposit-section p {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .upi-box {
+      background-color: #333;
+      padding: 1rem;
+      border: 2px dashed #ffcc00;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .upi-id {
+      font-size: 1.2rem;
+      color: #00ffcc;
+      text-align: center;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      margin: 15px 0;
+      border: 2px solid #ff9900;
+      border-radius: 8px;
+      background: #111;
+      color: #fff;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 1.1rem;
+      background-color: #ff3300;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #cc2900;
+    }
+
+    .status-msg {
+      margin-top: 1rem;
+      text-align: center;
+      font-weight: bold;
+      color: #ff4444;
+    }
+
+    .note {
+      font-size: 0.9rem;
+      color: #aaa;
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .deposit-section {
+        margin: 1rem;
+        padding: 1.5rem;
+      }
+    }
+  </style>
+
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
