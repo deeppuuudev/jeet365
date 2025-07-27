@@ -1,14 +1,12 @@
 // js/firebase-config.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-// Optional: Analytics
-// import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
 
-// Your web app's Firebase configuration
+// Firebase CDN scripts must be added in each HTML file before this config is used
+
+// Firebase project configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBo47HJZAcS8nCEyntKPAJLeJg_zUTo1nw",
   authDomain: "jeet365-e0749.firebaseapp.com",
+  databaseURL: "https://jeet365-e0749-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "jeet365-e0749",
   storageBucket: "jeet365-e0749.firebasestorage.app",
   messagingSenderId: "856388622116",
@@ -17,9 +15,14 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+firebase.initializeApp(firebaseConfig);
 
-// Export
-export { auth, db };
+// Initialize Firebase services
+const auth = firebase.auth();           // For login, signup, auth
+const db = firebase.firestore();        // For storing users, coins, requests
+const rtdb = firebase.database();       // Optional - if you want live game data
+
+// Export globally if needed in modules
+// window.auth = auth;
+// window.db = db;
+// window.rtdb = rtdb;
