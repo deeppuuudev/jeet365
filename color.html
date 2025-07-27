@@ -4,12 +4,11 @@
   <meta charset="UTF-8">
   <title>Color Game - Jeet365</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #ffffff, #ffe5b4); /* white to light orange */
+      background: linear-gradient(to bottom, #ffffff, #ffe5b4);
       color: #000;
     }
 
@@ -20,19 +19,11 @@
       text-align: center;
     }
 
-    .header nav {
-      margin-top: 10px;
-    }
-
     .header nav a {
       color: #fff;
       margin: 0 10px;
       text-decoration: none;
       font-weight: bold;
-    }
-
-    .header nav a:hover {
-      text-decoration: underline;
     }
 
     .game {
@@ -42,26 +33,9 @@
       text-align: center;
     }
 
-    .game h2 {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-
-    .game p {
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
-
     .timer {
       font-size: 20px;
       font-weight: bold;
-      margin-bottom: 20px;
-    }
-
-    .color-buttons {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
       margin-bottom: 20px;
     }
 
@@ -77,68 +51,55 @@
       min-width: 100px;
     }
 
-    .color-buttons .red { background-color: #e60000; }
-    .color-buttons .green { background-color: #28a745; }
-    .color-buttons .violet { background-color: #8a2be2; }
+    .red { background-color: #e60000; }
+    .green { background-color: #28a745; }
+    .violet { background-color: #8a2be2; }
+
+    #betSection {
+      display: none;
+      margin-top: 20px;
+    }
 
     input[type="number"] {
       padding: 10px;
       font-size: 16px;
       width: 80%;
       max-width: 300px;
-      margin-bottom: 20px;
       border: 2px solid #ccc;
       border-radius: 6px;
     }
 
     #resultBox {
-      font-size: 18px;
       margin-top: 20px;
+      font-size: 18px;
+      background: #ffd700;
       padding: 10px;
-      border-radius: 8px;
-      background-color: #ffd700; /* golden box */
-      color: #000;
+      border-radius: 6px;
     }
 
-    @media (max-width: 600px) {
-      .color-buttons {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .color-buttons button {
-        width: 80%;
-      }
-    }
-
-    /* WhatsApp Button */
-    .whatsapp-button {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #25D366;
-      color: white;
-      padding: 15px;
-      border-radius: 50%;
+    .popup {
+      background-color: rgba(0,0,0,0.6);
+      color: #fff;
       font-size: 20px;
-      text-decoration: none;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      padding: 20px;
+      border-radius: 10px;
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
       z-index: 1000;
-    }
-
-    .whatsapp-button:hover {
-      background-color: #1eb75a;
     }
   </style>
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="js/firebase-config.js"></script>
 </head>
 <body>
-
-  <header class="header">
+  <div class="header">
     <h1>🎯 Jeet365 - Color Game</h1>
     <nav>
       <a href="dashboard.html">🏠 Dashboard</a>
@@ -146,7 +107,7 @@
       <a href="withdraw.html">⬇ Withdraw</a>
       <a href="#" onclick="logout()">🚪 Logout</a>
     </nav>
-  </header>
+  </div>
 
   <section class="game">
     <h2>Choose a Color</h2>
@@ -155,71 +116,116 @@
     <div class="timer">⏱ Time Left: <span id="timer">30</span>s</div>
 
     <div class="color-buttons">
-      <button class="red" onclick="placeBet('red')">Red</button>
-      <button class="green" onclick="placeBet('green')">Green</button>
-      <button class="violet" onclick="placeBet('violet')">Violet</button>
+      <button class="red" onclick="selectColor('red')">Red</button>
+      <button class="green" onclick="selectColor('green')">Green</button>
+      <button class="violet" onclick="selectColor('violet')">Violet</button>
     </div>
 
-    <input type="number" id="betAmount" placeholder="Enter Bet Amount (Min 10)">
+    <div id="betSection">
+      <input type="number" id="betAmount" placeholder="Enter Bet Amount (Min 10)">
+      <button onclick="placeBet()">Place Bet</button>
+    </div>
+
     <div id="resultBox"></div>
   </section>
 
-  <!-- WhatsApp Support -->
-  <a href="https://wa.me/91XXXXXXXXXX" target="_blank" class="whatsapp-button">💬</a>
+  <div class="popup" id="popupMessage"></div>
 
   <script>
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
     let timer = 30;
     let gameInterval;
+    let selectedColor = "";
+    let placedBet = 0;
+    let currentUser = null;
+
+    auth.onAuthStateChanged(user => {
+      if (!user) location.href = "login.html";
+      currentUser = user;
+    });
+
+    function selectColor(color) {
+      selectedColor = color;
+      document.getElementById("betSection").style.display = "block";
+    }
+
+    async function placeBet() {
+      const amount = parseInt(document.getElementById("betAmount").value);
+      if (isNaN(amount) || amount < 10) {
+        alert("Minimum bet is 10 coins.");
+        return;
+      }
+
+      const userDoc = await db.collection("users").doc(currentUser.uid).get();
+      const coins = userDoc.data().coins || 0;
+
+      if (coins < amount) {
+        alert("Not enough coins!");
+        return;
+      }
+
+      // Deduct coins
+      await db.collection("users").doc(currentUser.uid).update({
+        coins: firebase.firestore.FieldValue.increment(-amount)
+      });
+
+      placedBet = amount;
+      document.getElementById("resultBox").innerText = `🕒 You bet ${amount} coins on ${selectedColor.toUpperCase()}`;
+      document.getElementById("betSection").style.display = "none";
+    }
 
     function startTimer() {
       gameInterval = setInterval(() => {
         timer--;
         document.getElementById("timer").textContent = timer;
-        if (timer === 0) {
+        if (timer <= 0) {
           clearInterval(gameInterval);
           showResult();
           setTimeout(() => {
             timer = 30;
+            placedBet = 0;
+            selectedColor = "";
+            document.getElementById("resultBox").innerText = "";
             startTimer();
-          }, 3000);
+          }, 4000);
         }
       }, 1000);
     }
 
-    function showResult() {
+    async function showResult() {
       const colors = ["red", "green", "violet"];
-      const random = Math.floor(Math.random() * 10); // 0-9
-      let result = "";
+      const winChance = Math.random();
 
-      if (random <= 7) {
-        result = colors[Math.floor(Math.random() * 3)];
-      } else {
-        result = lastColor || colors[Math.floor(Math.random() * 3)];
-      }
+      let result = winChance < 0.2 ? selectedColor : colors[Math.floor(Math.random() * colors.length)];
 
       document.getElementById("resultBox").innerHTML =
         `<p>🔔 Result: <strong style="color:${result}">${result.toUpperCase()}</strong></p>`;
+
+      if (placedBet > 0 && selectedColor === result) {
+        const winAmount = placedBet * 2;
+        await db.collection("users").doc(currentUser.uid).update({
+          coins: firebase.firestore.FieldValue.increment(winAmount)
+        });
+        showPopup(`🎉 You Won! +${winAmount} Coins`);
+      } else if (placedBet > 0) {
+        showPopup(`❌ You Lost! -${placedBet} Coins`);
+      }
     }
 
-    let lastColor = "";
-
-    function placeBet(color) {
-      const bet = parseInt(document.getElementById("betAmount").value);
-      if (isNaN(bet) || bet < 10) {
-        alert("Minimum bet is 10 coins.");
-        return;
-      }
-
-      lastColor = color;
-      document.getElementById("resultBox").innerHTML =
-        `🕒 You selected <strong style="color:${color}">${color.toUpperCase()}</strong> for ${bet} coins.`;
-
-      // TODO: Deduct coin from Firebase & save game history
+    function showPopup(msg) {
+      const popup = document.getElementById("popupMessage");
+      popup.innerText = msg;
+      popup.style.display = "block";
+      setTimeout(() => {
+        popup.style.display = "none";
+      }, 3000);
     }
 
     function logout() {
       auth.signOut().then(() => {
-        window.location.href = "login.html";
+        location.href = "login.html";
       });
     }
 
