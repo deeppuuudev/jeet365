@@ -1,137 +1,55 @@
+<!-- dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jeet365 - Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #111;
-      color: #fff;
-    }
-    header.dashboard-header {
-      background-color: #ff8c00;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 1.5rem;
-    }
-    #logoutBtn {
-      background-color: #000;
-      color: #fff;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    section.dashboard {
-      padding: 2rem;
-    }
-    .user-info {
-      background: #222;
-      padding: 1rem;
-      border-radius: 10px;
-      margin-bottom: 1.5rem;
-    }
-    .user-info p {
-      margin: 0.5rem 0;
-    }
-    .dashboard-buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 1rem;
-    }
-    .dashboard-buttons .btn {
-      background-color: #ffae00;
-      color: #000;
-      text-align: center;
-      padding: 1rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-      transition: background 0.3s;
-    }
-    .dashboard-buttons .btn:hover {
-      background-color: #ffc93c;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Dashboard - Jeet365</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="js/firebase-config.js"></script>
 </head>
 <body>
-
-  <header class="dashboard-header">
-    <h1>Jeet365 Dashboard</h1>
-    <button id="logoutBtn">Logout</button>
+  <header class="header">
+    <h1>Jeet365</h1>
+    <nav>
+      <a href="color.html">🎯 Color Game</a>
+      <a href="number.html">🔢 Number Game</a>
+      <a href="deposit.html">💸 Add Coins</a>
+      <a href="withdraw.html">⬇ Withdraw</a>
+      <a href="history.html">📊 History</a>
+      <a href="#" onclick="logout()">🚪 Logout</a>
+    </nav>
   </header>
 
   <section class="dashboard">
-    <div class="user-info">
-      <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
-      <p><strong>Coins:</strong> <span id="userCoins">0</span></p>
-    </div>
-
-    <div class="dashboard-buttons">
-      <a href="color.html" class="btn">🎨 Color Game</a>
-      <a href="number.html" class="btn">🔢 Number Game</a>
-      <a href="deposit.html" class="btn">💰 Deposit</a>
-      <a href="withdraw.html" class="btn">🏧 Withdraw</a>
-      <a href="history.html" class="btn">📜 History</a>
-      <a href="support.html" class="btn">📞 Support</a>
-    </div>
+    <h2>Welcome, <span id="userEmail"></span></h2>
+    <p>Your Coin Balance: <strong id="coinBalance">Loading...</strong> 🪙</p>
   </section>
 
-  <!-- Firebase Scripts -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBo47HJZAcS8nCEyntKPAJLeJg_zUTo1nw",
-      authDomain: "jeet365-e0749.firebaseapp.com",
-      projectId: "jeet365-e0749",
-      storageBucket: "jeet365-e0749.appspot.com",
-      messagingSenderId: "856388622116",
-      appId: "1:856388622116:web:f2313da855969554e405b1",
-      measurementId: "G-EH0F3Q96F5"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const userEmail = document.getElementById("userEmail");
-    const userCoins = document.getElementById("userCoins");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    onAuthStateChanged(auth, async (user) => {
+  <script>
+    auth.onAuthStateChanged((user) => {
       if (user) {
-        userEmail.innerText = user.email;
-        const userRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(userRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          userCoins.innerText = data.coins || 0;
-        } else {
-          userCoins.innerText = "0";
-        }
+        const uid = user.uid;
+        document.getElementById("userEmail").textContent = user.email;
+
+        db.collection("users").doc(uid).get().then((doc) => {
+          if (doc.exists) {
+            document.getElementById("coinBalance").textContent = doc.data().coins || 0;
+          }
+        });
       } else {
         window.location.href = "login.html";
       }
     });
 
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "login.html";
-    });
+    function logout() {
+      auth.signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    }
   </script>
-
 </body>
 </html>
