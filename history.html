@@ -1,0 +1,95 @@
+<!-- history.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Request History - Jeet365</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="js/firebase-config.js"></script>
+</head>
+<body>
+  <header class="header">
+    <h2>📜 Your Request History</h2>
+    <a href="dashboard.html">⬅ Back</a>
+  </header>
+
+  <main class="history-container">
+    <h3>💰 Coin Add Requests</h3>
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Amount</th>
+          <th>Type</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="addHistory"></tbody>
+    </table>
+
+    <h3>📤 Withdrawal Requests</h3>
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Amount</th>
+          <th>UPI</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="withdrawHistory"></tbody>
+    </table>
+  </main>
+
+  <script>
+    const user = firebase.auth().currentUser;
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        loadAddRequests(user.email);
+        loadWithdrawRequests(user.email);
+      }
+    });
+
+    function loadAddRequests(email) {
+      db.collection("coin_requests").where("email", "==", email)
+        .get().then(snapshot => {
+          const tbody = document.getElementById("addHistory");
+          tbody.innerHTML = "";
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            tbody.innerHTML += `
+              <tr>
+                <td>₹${data.amount}</td>
+                <td>${data.type}</td>
+                <td class="${data.status}">${data.status}</td>
+              </tr>
+            `;
+          });
+        });
+    }
+
+    function loadWithdrawRequests(email) {
+      db.collection("withdraw_requests").where("email", "==", email)
+        .get().then(snapshot => {
+          const tbody = document.getElementById("withdrawHistory");
+          tbody.innerHTML = "";
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            tbody.innerHTML += `
+              <tr>
+                <td>₹${data.amount}</td>
+                <td>${data.upi}</td>
+                <td class="${data.status}">${data.status}</td>
+              </tr>
+            `;
+          });
+        });
+    }
+  </script>
+</body>
+</html>
