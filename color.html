@@ -1,235 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Color Game - Jeet365</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #ffffff, #ffe5b4);
-      color: #000;
-    }
-
-    .header {
-      background-color: #ff7f00;
-      color: white;
-      padding: 15px;
-      text-align: center;
-    }
-
-    .header nav a {
-      color: #fff;
-      margin: 0 10px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .game {
-      padding: 20px;
-      max-width: 600px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .timer {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-
-    .color-buttons button {
-      padding: 12px 20px;
-      margin: 10px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      color: #fff;
-      cursor: pointer;
-      min-width: 100px;
-    }
-
-    .red { background-color: #e60000; }
-    .green { background-color: #28a745; }
-    .violet { background-color: #8a2be2; }
-
-    #betSection {
-      display: none;
-      margin-top: 20px;
-    }
-
-    input[type="number"] {
-      padding: 10px;
-      font-size: 16px;
-      width: 80%;
-      max-width: 300px;
-      border: 2px solid #ccc;
-      border-radius: 6px;
-    }
-
-    #resultBox {
-      margin-top: 20px;
-      font-size: 18px;
-      background: #ffd700;
-      padding: 10px;
-      border-radius: 6px;
-    }
-
-    .popup {
-      background-color: rgba(0,0,0,0.6);
-      color: #fff;
-      font-size: 20px;
-      padding: 20px;
-      border-radius: 10px;
-      position: fixed;
-      top: 30%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      display: none;
-      z-index: 1000;
-    }
-  </style>
-
-  <!-- Firebase -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="js/firebase-config.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #111;
+      color: #fff;
+    }
+
+    header {
+      background: #f39c12;
+      padding: 15px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    nav {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .game-container {
+      max-width: 500px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #1a1a1a;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(255, 165, 0, 0.3);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .timer {
+      text-align: center;
+      font-size: 22px;
+      margin: 10px 0;
+      color: #f1c40f;
+    }
+
+    .color-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .color-option {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      border: 3px solid transparent;
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+      border-color: #fff;
+    }
+
+    .red { background: red; }
+    .green { background: green; }
+    .blue { background: blue; }
+
+    input, button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+
+    input {
+      background: #333;
+      color: #fff;
+    }
+
+    button {
+      background: #f39c12;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-  <div class="header">
-    <h1>🎯 Jeet365 - Color Game</h1>
-    <nav>
-      <a href="dashboard.html">🏠 Dashboard</a>
-      <a href="number.html">🔢 Number Game</a>
-      <a href="withdraw.html">⬇ Withdraw</a>
-      <a href="#" onclick="logout()">🚪 Logout</a>
-    </nav>
-  </div>
+  <header>🎯 Jeet365 - Color Game</header>
 
-  <section class="game">
+  <nav>
+    <a href="dashboard.html">🏠 Dashboard</a>
+    <a href="number.html">🔢 Number Game</a>
+    <a href="withdraw.html">💸 Withdraw</a>
+    <a href="#" onclick="logout()">🚪 Logout</a>
+  </nav>
+
+  <div class="game-container">
     <h2>Choose a Color</h2>
-    <p>Each correct color wins 2x your bet</p>
-    
     <div class="timer">⏱ Time Left: <span id="timer">30</span>s</div>
 
-    <div class="color-buttons">
-      <button class="red" onclick="selectColor('red')">Red</button>
-      <button class="green" onclick="selectColor('green')">Green</button>
-      <button class="violet" onclick="selectColor('violet')">Violet</button>
+    <div class="color-boxes">
+      <div class="color-option red" onclick="placeBet('red')"></div>
+      <div class="color-option green" onclick="placeBet('green')"></div>
+      <div class="color-option blue" onclick="placeBet('blue')"></div>
     </div>
 
-    <div id="betSection">
-      <input type="number" id="betAmount" placeholder="Enter Bet Amount (Min 10)">
-      <button onclick="placeBet()">Place Bet</button>
-    </div>
-
-    <div id="resultBox"></div>
-  </section>
-
-  <div class="popup" id="popupMessage"></div>
+    <input type="number" id="betAmount" placeholder="Enter coins to bet (min 10)" />
+    <div id="message"></div>
+  </div>
 
   <script>
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    let timer = 30;
-    let gameInterval;
-    let selectedColor = "";
-    let placedBet = 0;
-    let currentUser = null;
-
-    auth.onAuthStateChanged(user => {
-      if (!user) location.href = "login.html";
-      currentUser = user;
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      }
     });
-
-    function selectColor(color) {
-      selectedColor = color;
-      document.getElementById("betSection").style.display = "block";
-    }
-
-    async function placeBet() {
-      const amount = parseInt(document.getElementById("betAmount").value);
-      if (isNaN(amount) || amount < 10) {
-        alert("Minimum bet is 10 coins.");
-        return;
-      }
-
-      const userDoc = await db.collection("users").doc(currentUser.uid).get();
-      const coins = userDoc.data().coins || 0;
-
-      if (coins < amount) {
-        alert("Not enough coins!");
-        return;
-      }
-
-      // Deduct coins
-      await db.collection("users").doc(currentUser.uid).update({
-        coins: firebase.firestore.FieldValue.increment(-amount)
-      });
-
-      placedBet = amount;
-      document.getElementById("resultBox").innerText = `🕒 You bet ${amount} coins on ${selectedColor.toUpperCase()}`;
-      document.getElementById("betSection").style.display = "none";
-    }
-
-    function startTimer() {
-      gameInterval = setInterval(() => {
-        timer--;
-        document.getElementById("timer").textContent = timer;
-        if (timer <= 0) {
-          clearInterval(gameInterval);
-          showResult();
-          setTimeout(() => {
-            timer = 30;
-            placedBet = 0;
-            selectedColor = "";
-            document.getElementById("resultBox").innerText = "";
-            startTimer();
-          }, 4000);
-        }
-      }, 1000);
-    }
-
-    async function showResult() {
-      const colors = ["red", "green", "violet"];
-      const winChance = Math.random();
-
-      let result = winChance < 0.2 ? selectedColor : colors[Math.floor(Math.random() * colors.length)];
-
-      document.getElementById("resultBox").innerHTML =
-        `<p>🔔 Result: <strong style="color:${result}">${result.toUpperCase()}</strong></p>`;
-
-      if (placedBet > 0 && selectedColor === result) {
-        const winAmount = placedBet * 2;
-        await db.collection("users").doc(currentUser.uid).update({
-          coins: firebase.firestore.FieldValue.increment(winAmount)
-        });
-        showPopup(`🎉 You Won! +${winAmount} Coins`);
-      } else if (placedBet > 0) {
-        showPopup(`❌ You Lost! -${placedBet} Coins`);
-      }
-    }
-
-    function showPopup(msg) {
-      const popup = document.getElementById("popupMessage");
-      popup.innerText = msg;
-      popup.style.display = "block";
-      setTimeout(() => {
-        popup.style.display = "none";
-      }, 3000);
-    }
 
     function logout() {
       auth.signOut().then(() => {
-        location.href = "login.html";
+        window.location.href = "login.html";
       });
     }
 
-    startTimer();
+    function placeBet(color) {
+      const amount = parseInt(document.getElementById("betAmount").value);
+      const user = auth.currentUser;
+
+      if (!amount || amount < 10) {
+        document.getElementById("message").innerText = "❌ Minimum 10 coins required.";
+        return;
+      }
+
+      const betData = {
+        uid: user.uid,
+        email: user.email,
+        color: color,
+        bet: amount,
+        result: "pending",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      db.collection("color_game").add(betData).then(() => {
+        document.getElementById("message").innerText = `✅ Bet placed on ${color.toUpperCase()}!`;
+        document.getElementById("betAmount").value = "";
+      }).catch((err) => {
+        document.getElementById("message").innerText = "❌ Error: " + err.message;
+      });
+    }
+
+    // Timer Logic (optional real-time countdown for game round)
+    let time = 30;
+    const timerElement = document.getElementById("timer");
+    const countdown = setInterval(() => {
+      time--;
+      timerElement.textContent = time;
+      if (time === 0) {
+        clearInterval(countdown);
+        document.getElementById("message").innerText = "⏳ Round over! Wait for result...";
+      }
+    }, 1000);
   </script>
 </body>
 </html>
