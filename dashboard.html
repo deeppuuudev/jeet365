@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Dashboard - Jeet365</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
   <style>
     * {
       margin: 0;
@@ -14,13 +14,14 @@
     }
 
     body {
-      background: #fffefc;
-      color: #111;
+      background: #fffdf7;
+      color: #222;
+      overflow-x: hidden;
     }
 
     .header {
-      background: linear-gradient(45deg, orange, goldenrod);
-      padding: 15px 10px;
+      background: linear-gradient(45deg, #ffa500, #ffcc00);
+      padding: 20px 10px;
       text-align: center;
       color: white;
       position: sticky;
@@ -29,8 +30,9 @@
     }
 
     .header h1 {
-      font-size: 24px;
-      margin-bottom: 10px;
+      font-size: 26px;
+      margin-bottom: 12px;
+      animation: fadeInDown 1s ease-in-out;
     }
 
     .header nav {
@@ -38,18 +40,19 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
+      animation: fadeInUp 1s ease-in-out;
     }
 
     .header nav a {
       background: white;
-      color: black;
-      padding: 8px 14px;
+      color: #333;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 600;
       text-decoration: none;
-      border-radius: 8px;
       font-size: 14px;
-      font-weight: 500;
+      box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.15);
       transition: 0.3s;
-      box-shadow: 1px 1px 4px #999;
     }
 
     .header nav a:hover {
@@ -57,24 +60,53 @@
       color: white;
     }
 
-    .dashboard {
+    .main-section {
       padding: 30px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      animation: fadeIn 1s ease;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       text-align: center;
+      transition: transform 0.3s;
     }
 
-    .dashboard h2 {
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .card h2 {
       font-size: 20px;
-      margin-bottom: 10px;
-    }
-
-    .dashboard p {
-      font-size: 18px;
-      font-weight: bold;
+      margin-bottom: 8px;
       color: #333;
     }
 
-    #coinBalance {
+    .card p {
+      font-size: 18px;
+      font-weight: bold;
       color: goldenrod;
+    }
+
+    .card a {
+      display: inline-block;
+      margin-top: 12px;
+      background: #ff7f00;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .card a:hover {
+      background: #e66800;
     }
 
     .whatsapp-button {
@@ -83,7 +115,7 @@
       right: 20px;
       background-color: #25D366;
       color: white;
-      padding: 14px 16px;
+      padding: 16px;
       border-radius: 50%;
       font-size: 24px;
       box-shadow: 0 0 8px rgba(0,0,0,0.3);
@@ -91,14 +123,33 @@
       z-index: 999;
     }
 
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     @media screen and (max-width: 600px) {
       .header nav a {
         font-size: 13px;
-        padding: 6px 10px;
+        padding: 8px 12px;
       }
 
-      .dashboard h2 {
+      .card h2 {
         font-size: 18px;
+      }
+
+      .card p {
+        font-size: 16px;
       }
     }
   </style>
@@ -111,9 +162,9 @@
 <body>
 
   <header class="header">
-    <h1>Jeet365 - Dashboard</h1>
+    <h1>🎯 Jeet365 - Dashboard</h1>
     <nav>
-      <a href="color.html">🎯 Color Game</a>
+      <a href="color.html">🎨 Color Game</a>
       <a href="number.html">🔢 Number Game</a>
       <a href="deposit.html">💸 Add Coins</a>
       <a href="withdraw.html">⬇ Withdraw</a>
@@ -122,12 +173,38 @@
     </nav>
   </header>
 
-  <section class="dashboard">
-    <h2>Welcome, <span id="userEmail"></span></h2>
-    <p>Your Coin Balance: <span id="coinBalance">Loading...</span> 🪙</p>
+  <section class="main-section">
+    <div class="card">
+      <h2>Welcome</h2>
+      <p id="userEmail">Loading...</p>
+    </div>
+
+    <div class="card">
+      <h2>Your Coin Balance</h2>
+      <p><span id="coinBalance">0</span> 🪙</p>
+    </div>
+
+    <div class="card">
+      <h2>Play Color Game</h2>
+      <a href="color.html">Play Now 🎨</a>
+    </div>
+
+    <div class="card">
+      <h2>Play Number Game</h2>
+      <a href="number.html">Play Now 🔢</a>
+    </div>
+
+    <div class="card">
+      <h2>Add Coins</h2>
+      <a href="deposit.html">Deposit 💸</a>
+    </div>
+
+    <div class="card">
+      <h2>Withdraw Coins</h2>
+      <a href="withdraw.html">Withdraw ⬇</a>
+    </div>
   </section>
 
-  <!-- WhatsApp Support Button -->
   <a class="whatsapp-button" href="https://wa.me/919123456789" target="_blank">💬</a>
 
   <script>
@@ -152,6 +229,5 @@
       });
     }
   </script>
-
 </body>
 </html>
