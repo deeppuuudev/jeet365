@@ -5,12 +5,85 @@
   <meta charset="UTF-8">
   <title>Login - Jeet365</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #fff8e7, #ffe5b4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .form-container {
+      background: white;
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(255, 153, 0, 0.3);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .form-container h2 {
+      color: #ff9800;
+      margin-bottom: 10px;
+    }
+
+    .form-container p {
+      color: #444;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(to right, #ffb347, #ffcc33);
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 10px rgba(255, 153, 0, 0.3);
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #ffcc33, #ffb347);
+    }
+
+    a {
+      color: #ff9800;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+
+  <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="js/firebase-config.js"></script>
 </head>
+
 <body>
   <div class="form-container">
     <h2>Welcome Back</h2>
