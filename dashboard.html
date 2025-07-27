@@ -1,221 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Dashboard - Jeet365</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Segoe UI", sans-serif;
-    }
-
-    body {
-      background: #fffdf7;
-      color: #222;
-      overflow-x: hidden;
-    }
-
-    .header {
-      background: linear-gradient(45deg, #ffa500, #ffcc00);
-      padding: 20px 10px;
-      text-align: center;
-      color: white;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .header h1 {
-      font-size: 26px;
-      margin-bottom: 12px;
-      animation: fadeInDown 1s ease-in-out;
-    }
-
-    .header nav {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      animation: fadeInUp 1s ease-in-out;
-    }
-
-    .header nav a {
-      background: white;
-      color: #333;
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-weight: 600;
-      text-decoration: none;
-      font-size: 14px;
-      box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.15);
-      transition: 0.3s;
-    }
-
-    .header nav a:hover {
-      background: goldenrod;
-      color: white;
-    }
-
-    .main-section {
-      padding: 30px 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 25px;
-      animation: fadeIn 1s ease;
-    }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 25px 20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      transition: transform 0.3s;
-    }
-
-    .card:hover {
-      transform: scale(1.03);
-    }
-
-    .card h2 {
-      font-size: 20px;
-      margin-bottom: 8px;
-      color: #333;
-    }
-
-    .card p {
-      font-size: 18px;
-      font-weight: bold;
-      color: goldenrod;
-    }
-
-    .card a {
-      display: inline-block;
-      margin-top: 12px;
-      background: #ff7f00;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: 0.3s;
-    }
-
-    .card a:hover {
-      background: #e66800;
-    }
-
-    .whatsapp-button {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #25D366;
-      color: white;
-      padding: 16px;
-      border-radius: 50%;
-      font-size: 24px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.3);
-      text-decoration: none;
-      z-index: 999;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media screen and (max-width: 600px) {
-      .header nav a {
-        font-size: 13px;
-        padding: 8px 12px;
-      }
-
-      .card h2 {
-        font-size: 18px;
-      }
-
-      .card p {
-        font-size: 16px;
-      }
-    }
-  </style>
-
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="js/firebase-config.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f0f;
+      color: white;
+    }
+
+    header {
+      background: #f39c12;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #000;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #1e1e1e;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(255, 165, 0, 0.3);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #f1c40f;
+    }
+
+    .info-box {
+      background: #2c2c2c;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .info-box span {
+      font-size: 18px;
+    }
+
+    .buttons {
+      display: grid;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .buttons a {
+      background: #f39c12;
+      color: #000;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .buttons a:hover {
+      background: #ffa502;
+    }
+
+    .logout-btn {
+      background: red;
+      color: #fff;
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 13px;
+      color: #aaa;
+    }
+  </style>
 </head>
 <body>
 
-  <header class="header">
-<h1>Jeet 365 </h1>
-    <br>
-    <h2> Dashboard </h2>
-  </header>
+  <header>🏆 Jeet365 Dashboard</header>
 
-  <section class="main-section">
-    <div class="card">
-      <h2>Welcome</h2>
-      <p id="userEmail">Loading...</p>
+  <div class="container">
+    <h2>Welcome to Jeet365</h2>
+
+    <div class="info-box">
+      <span><strong>Email:</strong></span>
+      <span id="userEmail">Loading...</span>
     </div>
 
-    <div class="card">
-      <h2>Your Coin Balance</h2>
-      <p><span id="coinBalance">0</span> 🪙</p>
+    <div class="info-box">
+      <span><strong>Coins:</strong></span>
+      <span id="userCoins">Loading...</span>
     </div>
 
-    <div class="card">
-      <h2>Play Color Game</h2>
-      <a href="color.html">Play Now 🎨</a>
+    <div class="buttons">
+      <a href="color.html">🎨 Play Color Game</a>
+      <a href="number.html">🔢 Play Number Game</a>
+      <a href="deposit.html">💰 Add Coins</a>
+      <a href="withdraw.html">💸 Withdraw Coins</a>
+      <a href="leaderboard.html">🏅 Leaderboard</a>
+      <a href="history.html">📜 Game History</a>
     </div>
 
-    <div class="card">
-      <h2>Play Number Game</h2>
-      <a href="number.html">Play Now 🔢</a>
-    </div>
+    <div class="logout-btn" onclick="logout()">🚪 Logout</div>
 
-    <div class="card">
-      <h2>Add Coins</h2>
-      <a href="deposit.html">Deposit 💸</a>
-    </div>
-
-    <div class="card">
-      <h2>Withdraw Coins</h2>
-      <a href="withdraw.html">Withdraw ⬇</a>
-    </div>
-  </section>
-
-  <a class="whatsapp-button" href="https://wa.me/919123456789" target="_blank">💬</a>
+    <div class="footer">© 2025 Jeet365 | Powered by Firebase</div>
+  </div>
 
   <script>
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        const uid = user.uid;
-        document.getElementById("userEmail").textContent = user.email;
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-        db.collection("users").doc(uid).get().then((doc) => {
-          if (doc.exists) {
-            document.getElementById("coinBalance").textContent = doc.data().coins || 0;
-          }
-        });
-      } else {
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
         window.location.href = "login.html";
+      } else {
+        document.getElementById("userEmail").textContent = user.email;
+        getUserCoins(user.uid);
       }
     });
+
+    function getUserCoins(uid) {
+      db.collection("users").doc(uid).onSnapshot((doc) => {
+        if (doc.exists) {
+          document.getElementById("userCoins").textContent = doc.data().coins || 0;
+        } else {
+          document.getElementById("userCoins").textContent = "0";
+        }
+      });
+    }
 
     function logout() {
       auth.signOut().then(() => {
