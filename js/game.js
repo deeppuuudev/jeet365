@@ -1,151 +1,86 @@
 // game.js
 
-let currentUser;
-let userCoins = 0;
-let gameInterval;
-let countdown = 30;
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getAuth, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    currentUser = user;
-    getUserCoins();
-    startGameTimer();
-  } else {
-    window.location.href = "login.html";
+import { firebaseConfig } from "./firebase-config.js";
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Timer
+let timeLeft = 30;
+const timerDisplay = document.getElementById("timer");
+let timer = setInterval(() => {
+  timeLeft--;
+  timerDisplay.innerText = timeLeft;
+  if (timeLeft <= 0) {
+    clearInterval(timer);
+    generateResult();
+    setTimeout(() => location.reload(), 3000); // reload for next round
   }
-});
+}, 1000);
 
-// Get user coins
-function getUserCoins() {
-  firebase.firestore().collection("users").doc(currentUser.uid).get()
-    .then(doc => {
-      userCoins = doc.data().coins || 0;
-      document.getElementById("coinBalance").innerText = userCoins;
-    });
-}
+let selectedColor = "";
+let selectedNumber = "";
 
-// Start 30-sec game timer
-function startGameTimer() {
-  updateTimerDisplay();
-  gameInterval = setInterval(() => {
-    countdown--;
-    updateTimerDisplay();
+window.selectColor = (color) => {
+  selectedColor = color;
+  alert("Color selected: " + color);
+};
 
-    if (countdown <= 0) {
-      clearInterval(gameInterval);
-      showGameResult();
-      countdown = 30;
-      setTimeout(() => {
-        resetSelections();
-        startGameTimer();
-      }, 5000);
-    }
-  }, 1000);
-}
+window.selectNumber = (num) => {
+  selectedNumber = num;
+  alert("Number selected: " + num);
+};
 
-function updateTimerDisplay() {
-  document.getElementById("timer").innerText = `${countdown}s`;
-}
+window.placeBet = async () => {
+  const amount = parseInt(document.getElementById("betAmount").value);
+  const user = auth.currentUser;
+  if (!user) return alert("Login required");
+  if (!selectedColor && selectedNumber === "") return alert("Choose a color or number");
+  if (isNaN(amount) || amount < 10) return alert("Min bet is 10 coins");
 
-// Place Bet
-document.getElementById("betBtn").addEventListener("click", () => {
-  const selectedColor = document.querySelector('input[name="color"]:checked')?.value;
-  const selectedNumber = document.querySelector('input[name="number"]:checked')?.value;
-  const betAmount = parseInt(document.getElementById("betAmount").value);
-
-  if ((!selectedColor && !selectedNumber) || isNaN(betAmount) || betAmount < 10) {
-    alert("Select a color or number and enter minimum 10 coins to bet.");
-    return;
-  }
-
-  if (userCoins < betAmount) {
-    alert("Not enough coins.");
-    return;
-  }
-
-  // Deduct coins
-  userCoins -= betAmount;
-  updateCoinsInFirestore(userCoins);
-  document.getElementById("coinBalance").innerText = userCoins;
-
-  // Store bet temporarily
-  sessionStorage.setItem("bet", JSON.stringify({
-    type: selectedColor ? "color" : "number",
-    value: selectedColor || selectedNumber,
-    amount: betAmount
-  }));
-
-  document.getElementById("betStatus").innerText = "Bet placed!";
-});
-
-// Show game result
-function showGameResult() {
-  const resultColor = getRandomColor();
-  const resultNumber = getRandomNumber();
-  const bet = JSON.parse(sessionStorage.getItem("bet"));
-
-  document.getElementById("gameResult").innerHTML = `
-    Result Color: <b>${resultColor}</b><br>
-    Result Number: <b>${resultNumber}</b>
-  `;
-
-  // Check win
-  if (bet) {
-    let win = false;
-    let reward = 0;
-
-    if (bet.type === "color" && bet.value === resultColor) {
-      win = true;
-      reward = bet.amount * 2;
-    } else if (bet.type === "number" && bet.value === resultNumber.toString()) {
-      win = true;
-      reward = bet.amount * 8;
-    }
-
-    if (win) {
-      userCoins += reward;
-      updateCoinsInFirestore(userCoins);
-      document.getElementById("betStatus").innerText = `You won! +${reward} coins`;
-    } else {
-      document.getElementById("betStatus").innerText = `You lost!`;
-    }
-
-    sessionStorage.removeItem("bet");
-    document.getElementById("coinBalance").innerText = userCoins;
-  }
-}
-
-// Update coins in Firestore
-function updateCoinsInFirestore(newCoins) {
-  firebase.firestore().collection("users").doc(currentUser.uid).update({
-    coins: newCoins
+  await addDoc(collection(db, "bets"), {
+    uid: user.uid,
+    color: selectedColor || null,
+    number: selectedNumber !== "" ? selectedNumber : null,
+    amount,
+    time: Date.now()
   });
-}
+  alert("Bet placed!");
+};
 
-// Logic to return 80% loss, 20% win
-function getRandomColor() {
-  const colors = ["Red", "Green", "Violet"];
-  return Math.random() < 0.2 ? colors[Math.floor(Math.random() * 3)] : getLosingColor();
-}
+window.logout = () => signOut(auth).then(() => location.href = "login.html");
 
-function getLosingColor() {
-  const bet = JSON.parse(sessionStorage.getItem("bet"));
-  const colors = ["Red", "Green", "Violet"];
-  return colors.filter(c => c !== bet?.value)[Math.floor(Math.random() * 2)];
-}
-
-function getRandomNumber() {
-  if (Math.random() < 0.2) {
-    return parseInt(JSON.parse(sessionStorage.getItem("bet"))?.value || "0");
-  } else {
-    let wrong = Math.floor(Math.random() * 10);
-    const betNum = parseInt(JSON.parse(sessionStorage.getItem("bet"))?.value);
-    return (wrong === betNum) ? (wrong + 1) % 10 : wrong;
+// Show last 20 fake results
+const resultsList = document.getElementById("resultsList");
+const fakeUsers = ["User123", "PlayerX", "Tester99", "Jeet007", "Lucky1"];
+const colors = ["red", "green", "violet"];
+const generateFakeResults = () => {
+  for (let i = 0; i < 20; i++) {
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const number = Math.floor(Math.random() * 10);
+    const name = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
+    const result = document.createElement("div");
+    result.className = "result-entry";
+    result.innerText = `${name}: Color - ${color}, Number - ${number}`;
+    resultsList.appendChild(result);
   }
-}
+};
+generateFakeResults();
 
-function resetSelections() {
-  document.querySelectorAll('input[name="color"], input[name="number"]').forEach(e => e.checked = false);
-  document.getElementById("betAmount").value = "";
-  document.getElementById("betStatus").innerText = "";
-}
+// TODO: Add real results from Firebase later
+const generateResult = async () => {
+  const winColor = colors[Math.random() < 0.8 ? Math.floor(Math.random() * 3) : 1]; // 80% loss logic
+  const winNumber = Math.floor(Math.random() * 10);
+  const winText = document.createElement("div");
+  winText.className = "result-entry";
+  winText.innerText = `🔴 Result: Color - ${winColor}, Number - ${winNumber}`;
+  resultsList.prepend(winText);
+};
