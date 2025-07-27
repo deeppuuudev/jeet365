@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Jeet365 - Game</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jeet365 - Color Prediction Game</title>
+  
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="js/firebase-config.js"></script>
 
-  <!-- Inside CSS for Game Page -->
   <style>
     * {
       margin: 0;
@@ -15,166 +20,161 @@
     }
 
     body {
-      background-color: #000;
-      color: #fff;
+      background: linear-gradient(to bottom, #ffffff, #ffe6cc);
+      color: #000;
       padding: 20px;
     }
 
-    .game-container {
-      max-width: 500px;
-      margin: auto;
-      background: #111;
-      padding: 25px;
-      border-radius: 20px;
-      box-shadow: 0 0 15px gold;
-    }
-
-    h2, h3 {
+    header {
+      background-color: #ff9933;
+      padding: 20px;
       text-align: center;
-      color: gold;
-      margin-bottom: 10px;
-    }
-
-    .balance, #timer {
-      text-align: center;
-      font-size: 18px;
-      margin-bottom: 15px;
-    }
-
-    #timer {
-      color: orange;
-      font-weight: bold;
-      font-size: 22px;
-    }
-
-    .section {
-      margin: 20px 0;
-    }
-
-    .options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-    }
-
-    input[type="radio"] {
-      display: none;
-    }
-
-    label {
-      background: #222;
       color: #fff;
-      padding: 10px 15px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      font-size: 24px;
+      border-radius: 12px;
+      margin-bottom: 20px;
     }
 
-    input[type="radio"]:checked + label {
-      background: goldenrod;
-      color: #000;
-      font-weight: bold;
-    }
-
-    input[type="number"] {
-      width: 100%;
-      padding: 10px;
+    nav {
       margin-top: 10px;
-      border-radius: 10px;
-      border: none;
-      background: #222;
-      color: white;
     }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      background: gold;
-      color: black;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      margin-top: 20px;
-      transition: 0.3s ease;
-    }
-
-    button:hover {
-      background: orange;
-    }
-
-    .status, .result {
-      text-align: center;
-      margin-top: 15px;
+    nav a {
+      margin: 0 10px;
+      color: #fff;
+      text-decoration: none;
       font-weight: bold;
-      font-size: 16px;
     }
 
-    .footer-note {
-      text-align: center;
-      margin-top: 30px;
-      font-size: 13px;
-      color: #888;
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .color-boxes {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .color-box {
+      width: 120px;
+      height: 120px;
+      border-radius: 16px;
+      color: #fff;
+      font-size: 20px;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .color-box:hover {
+      transform: scale(1.05);
+    }
+
+    .red { background-color: #e74c3c; }
+    .green { background-color: #27ae60; }
+    .violet { background-color: #8e44ad; }
+
+    .note {
+      margin-top: 10px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .color-box {
+        width: 90px;
+        height: 90px;
+        font-size: 16px;
+      }
+    }
+
+    .whatsapp-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #25D366;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      padding: 15px;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
   </style>
 </head>
+
 <body>
+  <header>
+    🎯 Jeet365 - Color Prediction
+    <nav>
+      <a href="dashboard.html">Dashboard</a> |
+      <a href="deposit.html">Deposit</a> |
+      <a href="withdraw.html">Withdraw</a> |
+      <a href="#" onclick="logout()">Logout</a>
+    </nav>
+  </header>
 
   <div class="game-container">
-    <h2>🎮 Jeet365 Game</h2>
-    <div class="balance">Your Coins: <span id="coinBalance">0</span></div>
-    <div id="timer">30s</div>
-
-    <div class="section">
-      <h3>Choose Color</h3>
-      <div class="options">
-        <input type="radio" id="red" name="color" value="Red">
-        <label for="red">🔴 Red</label>
-
-        <input type="radio" id="green" name="color" value="Green">
-        <label for="green">🟢 Green</label>
-
-        <input type="radio" id="violet" name="color" value="Violet">
-        <label for="violet">🟣 Violet</label>
-      </div>
+    <h2>🎨 Choose a Color</h2>
+    <div class="color-boxes">
+      <div class="color-box red" onclick="selectColor('Red')">Red</div>
+      <div class="color-box green" onclick="selectColor('Green')">Green</div>
+      <div class="color-box violet" onclick="selectColor('Violet')">Violet</div>
     </div>
-
-    <div class="section">
-      <h3>Or Choose Number</h3>
-      <div class="options">
-        <!-- Numbers 0-9 -->
-        <script>
-          for (let i = 0; i <= 9; i++) {
-            document.write(`
-              <input type="radio" id="num${i}" name="number" value="${i}">
-              <label for="num${i}">${i}</label>
-            `);
-          }
-        </script>
-      </div>
-    </div>
-
-    <div class="section">
-      <h3>Bet Amount (Min 10)</h3>
-      <input type="number" id="betAmount" placeholder="Enter bet coins" min="10" />
-    </div>
-
-    <button id="betBtn">Place Bet</button>
-
-    <div class="status" id="betStatus"></div>
-    <div class="result" id="gameResult"></div>
+    <p class="note">💡 Minimum 10 coins required to place a bet.</p>
   </div>
 
-  <div class="footer-note">Play responsibly. Luck is unpredictable. 🎲</div>
+  <button class="whatsapp-btn" onclick="window.open('https://wa.me/91YOURNUMBER', '_blank')">💬</button>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js"></script>
-  <script src="firebase-config.js"></script>
+  <script>
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (!user) {
+        window.location.href = "login.html";
+      }
+    });
 
-  <!-- Game Logic -->
-  <script src="js/game.js"></script>
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    }
+
+    function selectColor(color) {
+      const amount = prompt(`Enter amount to bet on ${color}:`);
+      if (!amount || isNaN(amount) || parseInt(amount) < 10) {
+        alert("❌ Minimum 10 coins required.");
+        return;
+      }
+
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        alert("User not logged in");
+        return;
+      }
+
+      firebase.firestore().collection("color_game").add({
+        uid: user.uid,
+        email: user.email,
+        color: color,
+        bet: parseInt(amount),
+        result: "pending",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        alert(`✅ Bet placed on ${color} for ₹${amount}`);
+      }).catch(err => {
+        alert("❌ Error: " + err.message);
+      });
+    }
+  </script>
 </body>
 </html>
