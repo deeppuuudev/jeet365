@@ -6,7 +6,6 @@
   <title>Signup - Jeet365</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* Styling same as your original */
     body {
       margin: 0;
       padding: 0;
@@ -57,10 +56,10 @@
     a:hover { text-decoration: underline; }
   </style>
 
-  <!-- Firebase CDN -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <!-- Firebase CDN for v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
   <script src="js/firebase-config.js"></script>
 </head>
 <body>
@@ -78,20 +77,24 @@
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      if (!email || !password) return alert("Enter valid email and password.");
+      if (!email || !password) {
+        alert("Please enter both email and password.");
+        return;
+      }
 
       auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
           const uid = userCredential.user.uid;
+
           return db.collection("users").doc(uid).set({
             email: email,
-            coins: 10,
+            coins: 100,  // 🔄 Welcome coins updated to 100 (as per your earlier plan)
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             isAdmin: false
           });
         })
         .then(() => {
-          alert("Account created! You got 10 welcome coins.");
+          alert("Account created! You got 100 welcome coins.");
           window.location.href = "dashboard.html";
         })
         .catch((error) => {
