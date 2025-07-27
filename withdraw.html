@@ -1,15 +1,131 @@
-<!-- withdraw.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Withdraw Coins - Jeet365</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="js/firebase-config.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom, #fff, #ffa726);
+      color: #000;
+      padding: 20px;
+    }
+
+    .header {
+      background: #ff9800;
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .header nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .header nav a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      padding: 8px 12px;
+      background-color: #e65100;
+      border-radius: 6px;
+      transition: background 0.3s ease;
+    }
+
+    .header nav a:hover {
+      background-color: #bf360c;
+    }
+
+    .withdraw-section {
+      background-color: gold;
+      padding: 20px;
+      border-radius: 15px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .withdraw-section h2 {
+      font-size: 22px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .withdraw-section p {
+      font-size: 14px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .withdraw-section input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 2px solid #000;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    .withdraw-section button {
+      width: 100%;
+      background-color: #000;
+      color: #fff;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .withdraw-section button:hover {
+      background-color: #333;
+    }
+
+    .status-msg {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    @media screen and (max-width: 600px) {
+      .withdraw-section {
+        padding: 15px;
+      }
+
+      .header nav a {
+        padding: 6px 10px;
+        font-size: 14px;
+      }
+
+      .header h1 {
+        font-size: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="header">
@@ -34,7 +150,7 @@
 
   <script>
     function logout() {
-      auth.signOut().then(() => {
+      firebase.auth().signOut().then(() => {
         window.location.href = "login.html";
       });
     }
