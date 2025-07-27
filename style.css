@@ -1,247 +1,157 @@
-/* === Global Reset === */
+/* Reset & Global */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  scroll-behavior: smooth;
   font-family: 'Poppins', sans-serif;
 }
 
-/* === Body Styling === */
 body {
-  background-color: #0a0a0a;
+  background-color: #000;
   color: #fff;
-  line-height: 1.6;
+  padding: 20px;
 }
 
-/* === Header & Branding === */
-header {
-  background: linear-gradient(to right, #ff8800, #ffaa00);
-  padding: 15px 0;
-  text-align: center;
-  box-shadow: 0 0 25px #ffd700;
-}
-
-header h1 {
-  color: #ffd700;
-  font-size: 2.5rem;
-  text-shadow: 0 0 10px #ffaa00;
-}
-
-/* === Navigation Buttons === */
-.navbar {
-  background-color: #ff8800;
-  padding: 10px;
-  text-align: center;
-}
-
-.navbar a {
-  color: white;
-  text-decoration: none;
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin: 0 15px;
-  transition: all 0.3s ease;
-}
-
-.navbar a:hover {
-  color: #000;
-  background-color: #ffd700;
-  padding: 5px 10px;
-  border-radius: 8px;
-}
-
-/* === Hero Section === */
-.hero {
-  padding: 50px 20px;
-  text-align: center;
-  background-color: #111;
-  border-bottom: 2px solid #ff8800;
-}
-
-.hero h2 {
-  font-size: 2rem;
-  color: #ffd700;
-  text-shadow: 0 0 10px #ff8800;
-}
-
-.hero p {
-  margin-top: 15px;
-  font-size: 1.1rem;
-  color: #ddd;
-}
-
-/* === Call to Action Button === */
-.cta-btn {
-  margin-top: 30px;
-  background-color: #ff5500;
-  color: white;
-  padding: 12px 25px;
-  border: none;
-  border-radius: 30px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 0 15px #ffaa00;
-  transition: 0.3s;
-}
-
-.cta-btn:hover {
-  background-color: #ffaa00;
-  color: #000;
-}
-
-/* === Section Titles === */
-.section-title {
-  font-size: 1.8rem;
-  color: #ffd700;
-  margin: 30px 0 15px;
-  text-align: center;
-  text-shadow: 0 0 10px #ffaa00;
-}
-
-/* === Feature Cards === */
-.features {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  padding: 30px;
-}
-
-.feature-box {
-  background: #1a1a1a;
-  border: 1px solid #333;
-  border-radius: 15px;
-  padding: 25px;
-  box-shadow: 0 0 20px rgba(255, 136, 0, 0.3);
-  transition: transform 0.3s;
-}
-
-.feature-box:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
-}
-
-.feature-box h3 {
-  color: #ffaa00;
-  font-size: 1.4rem;
+/* Headings */
+h1, h2, h3 {
+  color: #FFD700;
+  text-shadow: 1px 1px 5px #FFA500;
   margin-bottom: 10px;
 }
 
-.feature-box p {
-  color: #ccc;
-  font-size: 1rem;
-}
-
-/* === Footer === */
-footer {
-  text-align: center;
-  padding: 20px;
-  background-color: #111;
-  color: #aaa;
-  font-size: 0.9rem;
-  border-top: 2px solid #ff8800;
-}
-
-/* === Inputs and Forms === */
-input, textarea, select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #444;
-  border-radius: 8px;
-  margin: 10px 0;
-  background-color: #222;
-  color: white;
-}
-
-input:focus, textarea:focus {
-  border-color: #ffaa00;
-  outline: none;
-  box-shadow: 0 0 10px #ffaa00;
-}
-
-/* === Buttons (Generic) === */
-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  background: #ffaa00;
-  color: black;
-  cursor: pointer;
-  box-shadow: 0 0 10px #ff8800;
-  transition: all 0.3s;
-}
-
-button:hover {
-  background: #ffd700;
-  color: #000;
-  box-shadow: 0 0 15px #ffcc00;
-}
-
-/* === Game Result Box === */
-.result-box {
-  margin: 20px auto;
-  padding: 20px;
-  background-color: #1b1b1b;
-  border-left: 5px solid #ffaa00;
+/* Buttons */
+button, .btn {
+  background: linear-gradient(to right, #FFA500, #FF8C00);
   color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 0 20px #ff8800;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(255, 165, 0, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
 
-/* === Admin Panel Section === */
-.admin-panel {
+button:hover, .btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(255, 165, 0, 0.6);
+}
+
+/* Navigation */
+.navbar {
+  background: linear-gradient(to right, #FFB300, #FF8C00);
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+  margin-bottom: 30px;
+}
+
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 18px;
+  margin: 0 12px;
+}
+
+.navbar a:hover {
+  color: #FFD700;
+}
+
+/* Section Styling */
+section {
+  margin-bottom: 40px;
   padding: 20px;
   background: #111;
   border-radius: 12px;
-  box-shadow: 0 0 15px #ffaa00;
-  margin: 20px;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+/* Form Styling */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background-color: #111;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  max-width: 400px;
+  margin: auto;
+}
+
+input, select, textarea {
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #FFB300;
+  border-radius: 8px;
+  background-color: #000;
   color: #fff;
 }
 
-.admin-panel h2 {
-  color: #ffd700;
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #FFD700;
+}
+
+/* Game Boxes */
+.game-box {
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 14px;
+  margin-top: 15px;
   text-align: center;
-  margin-bottom: 15px;
+  box-shadow: 0 0 10px rgba(255, 140, 0, 0.4);
 }
 
-/* === Table Styling === */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #1e1e1e;
-  margin-top: 20px;
+.game-box h3 {
+  color: #FFD700;
+  margin-bottom: 10px;
 }
 
-table th, table td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #333;
-  color: #eee;
+/* Footer */
+footer {
+  text-align: center;
+  color: #aaa;
+  margin-top: 40px;
+  font-style: italic;
 }
 
-table th {
-  background-color: #ff8800;
-  color: #000;
+/* Join Now Banner */
+.banner {
+  background: linear-gradient(to right, #FFB300, #FF8C00);
+  padding: 18px;
+  border-radius: 14px;
+  text-align: center;
+  color: #fff;
+  font-weight: bold;
+  font-size: 22px;
+  box-shadow: 0 0 15px rgba(255, 165, 0, 0.5);
 }
 
-/* === Responsive === */
+/* Icon Text Highlights */
+.highlight {
+  color: #FFD700;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px orange;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .hero h2 {
-    font-size: 1.5rem;
+  .navbar {
+    flex-direction: column;
+    gap: 10px;
   }
 
-  .cta-btn {
-    font-size: 1rem;
-    padding: 10px 20px;
+  form {
+    width: 100%;
   }
 
-  .features {
-    padding: 20px 10px;
-  }
-
-  header h1 {
-    font-size: 2rem;
+  .game-box {
+    font-size: 14px;
   }
 }
