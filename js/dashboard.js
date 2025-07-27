@@ -1,41 +1,38 @@
-// dashboard.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Ensure Firebase Config is already imported in your HTML via firebase-config.js
-const auth = firebase.auth();
-const db = firebase.firestore();
+import { firebaseConfig } from './firebase-config.js';
 
-// DOM References
-const userNameEl = document.getElementById("userName");
-const userCoinsEl = document.getElementById("userCoins");
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// On auth state change, fetch and display user document
-auth.onAuthStateChanged((user) => {
+const userName = document.getElementById("userName");
+const userCoins = document.getElementById("userCoins");
+
+onAuthStateChanged(auth, async (user) => {
   if (user) {
-    const userRef = db.collection("users").doc(user.uid);
-
-    userRef.onSnapshot((doc) => {
-      if (doc.exists) {
-        const data = doc.data();
-        userNameEl.textContent = data.name || user.email;
-        userCoinsEl.textContent = data.coins != null ? data.coins : "0";
-      } else {
-        console.warn("User document not found.");
-        userNameEl.textContent = user.email;
-        userCoinsEl.textContent = "0";
-      }
-    }, (error) => {
-      console.error("Error reading user data:", error);
-    });
+    const uid = user.uid;
+    const userRef = doc(db, "users", uid);
+    const userSnap = await getDoc(userRef);
+    
+    if (userSnap.exists()) {
+      const data = userSnap.data();
+      userName.innerText = user.email;
+      userCoins.innerText = data.coins || 0;
+    } else {
+      userName.innerText = "No data";
+      userCoins.innerText = 0;
+    }
   } else {
     window.location.href = "login.html";
   }
 });
 
-// Logout function
-window.logout = function() {
-  auth.signOut().then(() => {
+function logout() {
+  signOut(auth).then(() => {
     window.location.href = "login.html";
-  }).catch((err) => {
-    console.error("Logout failed:", err);
   });
-};
+}
+window.logout = logout;
